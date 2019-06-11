@@ -1,0 +1,216 @@
+
+
+    HTML SCSS Babel 
+
+    Result 
+
+EDIT ON
+  
+    
+    
+    
+    
+    
+    
+    
+  
+
+/* ===========================================
+              Our Pretend User Data
+=========================================== */
+
+const userList = {
+  1: {
+    userName: 'Peter Parker',
+    heroName: 'Spiderman'
+  },
+  2: {
+    userName: 'Bruce Banner',
+    heroName: 'Hulk'
+  },
+  3: {
+    userName: 'Tony Stark',
+    heroName: 'Ironman'
+  }
+}
+
+/* ===========================================
+              Our Components
+=========================================== */
+
+const Home = {
+  template: `
+    <section>This is the home screen.</section>
+  `
+} 
+
+const Foo = {
+  template: `
+    <section>You will not see this template when Foo is redirected to Home.</section>
+  `
+} 
+
+const Err = {
+  template: `
+    <section>
+      You will not see this template. The error is passed to our error handler.
+    </section>
+  `
+} 
+
+const Bar = { 
+  template: `
+    <section>
+      <div>Bar - <span @click="testFunc" style="color: #cc0000; cursor: pointer;">testFunc()</span></div>
+    </section>
+  `,
+  // set guard on the component options object:
+  beforeRouteEnter ( to, from, next ) {
+    // console.log('Entering Bar')
+    
+    // Pass a callback to next (optional)
+    next(vm => {
+      // this callback has access to component instance (ie: 'this') via `vm`
+      vm.testFunc('Some Message', true)
+      // console.log("Fully Entered Bar")
+    })
+  },
+  // set guard on the component options object:
+  beforeRouteLeave ( to, from, next ) {
+    // console.log('Leaving Bar')
+    next()
+  },
+  methods: {
+    testFunc(msg, fromGuard = false) {
+      fromGuard ? console.log(`This message called from the guard: ${msg}`) : console.log(`This message called from component.`)
+    }
+  }
+}
+
+/* ===========================================
+        This User Component will be Reused
+=========================================== */
+const User = {
+  props: ["userId"],
+  template: `
+    <div>
+      <div v-if="user">User - {{user.userName}}({{userId}}) = {{user.heroName}}</div>
+    </div>
+  `,
+  data() {
+   return {
+     user: {
+       userName: '',
+       heroName: ''
+     }
+   }
+  },
+  mounted() {
+    this.user = this.getUser(this.userId)
+  },
+  methods: {
+    getUser(id) {
+      // console.log('Fetching User')
+      return userList[id]
+    }
+  },
+  // set guard on the component options object:
+  beforeRouteLeave ( to, from, next ) {
+    // console.log('Leaving User')
+    next(false)
+  },
+  /* Called when this component is reused.
+  Here we have a chance to update the component
+  since mounted() and other life-cycle hooks won't be called 
+  when a component is reused. */
+  beforeRouteUpdate ( to, from , next ) {
+    // console.log('Reusing this component.')
+    this.user = this.getUser(to.params.userId)
+      // console.log('Entering User', to.params.userId)
+    
+    next()
+  }
+}
+
+/* ===========================================
+              Per-route Guards
+=========================================== */
+
+const routes = [
+  { path: '/', name: 'home', component: Home},
+  { path: "/bar", name: 'bar', component: Bar },
+  { path: "/foo", name: 'foo', component: Foo },
+  { path: "/error", name: 'error', component: Err },
+  {
+    path: "/user/:userId",
+    name: "user",
+    component: User,
+    props: true,
+    // set nav guard on the route definition object:
+    beforeEnter: (to, from, next) => {
+      console.log('Entering User', to.params.userId)
+      to.params.myCustomizations = {
+        
+      }
+      next()
+    }
+  }
+  
+]
+
+const router = new VueRouter({
+  routes // short for routes: routes
+})
+
+/* ===========================================
+              GLOBAL GUARDS
+ =========================================== */
+
+// GLobal BEFORE hooks:
+router.beforeEach((to, from, next) => {
+  // console.log('Global -- beforeEach - fired')
+  
+  // re-route
+  if (to.path === '/foo') {
+    next('/')
+  } 
+  // Abort navigation based on some criteria:
+  // else if (to.path === '/user/1') {
+  //   next(false)
+  // } 
+  else if (to.path === '/error') {
+    const err = new Error('My Error Message')
+    
+    // pass the error to onError() callback.
+    next(err)
+  }
+  else {
+    next()
+  }
+})
+
+// Global beforeResolve 
+router.beforeResolve((to, from, next) => {
+  // console.log('Global -- beforeResolve - fired.')
+  next()
+})
+
+// GLobal AFTER hooks:
+router.afterEach((to, from) => {
+  // This fires after each route is entered.
+  // console.log(`Global -- afterEach - Just moved from '${from.path}' to '${to.path}'`)
+})
+
+// Register an Error Handler:
+router.onError(err => {
+  console.error('Handling this error', err.message)
+})
+
+
+// mount the app
+const app = new Vue({
+  router
+}).$mount("#app")
+
+View Compiled
+
