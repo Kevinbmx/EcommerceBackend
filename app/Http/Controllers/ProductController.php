@@ -12,12 +12,20 @@ class ProductController extends Controller
 {
     public function index(){
         // return response()
+        //     ->json([
+        //         'model' => Product::filterPaginateOrder()
+        //     ]);
+        // return response()
         // ->json([
         //     // 'model' => Product::filterPaginateOrder()
         //     'model'=>Product::where('user_id', auth()->id())->with('categories')->filterPaginateOrder()
         // ]);
         // return Product::where('user_id', auth()->id())->with('categories')->filterPaginateOrder();
+
+        // --------------------ESTE SIRVE----------------
         return Product::with('users')->get();
+        // ----------------------------------------------
+
         //  $id = $this->Auth::user();
         //  return $id;
         //     $product = Product::with('categories')->filterPaginateOrder();
@@ -25,7 +33,7 @@ class ProductController extends Controller
         // dd( Product::all());
     }
       //---------------para el main page-----------------------
-      public function getRandomProduct(){
+    public function getRandomProduct(){
         $product=Product::with('file')->get()->random(6);
         return $product;        
     }
@@ -65,7 +73,6 @@ class ProductController extends Controller
             'user_id'=> $IdUser,
             'description'=>$request->description
         ]);
-      
         return response()
             ->json([
                 'create'=>true,
@@ -117,58 +124,13 @@ class ProductController extends Controller
     {  
         $IdUser = auth()->id();
         $ProductById = Product::where('id',$idProduct)->where('user_id',$IdUser)->get();
-      return $ProductById[0];
+        return $ProductById[0];
 
     }
-  
-
     
     public function destroy(Product $product )
     {  
-       
     }
 
-    public function searchProduct($search){
-        $product = Product::with('file')
-        ->leftJoin('category as ca','ca.id','product.category_id')
-                        ->orWhere('product.name','like',"%$search%")
-                        ->orWhere('product.modelo','like',"%$search%")
-                        ->orWhere('product.brand','like',"%$search%")
-                        ->orWhere('product.description','like',"%$search%")
-                        ->orWhere('product.uniqueCode','like',"%$search%")
-                        ->orWhere('ca.name','like',"%$search%")
-                        ->get(['product.*']);
-        // $category = Category::leftJoin('product','product.category_id','category.id')
-        //                 ->orWhere('product.name','like',"%$search%")
-        //                 ->orWhere('product.modelo','like',"%$search%")
-        //                 ->orWhere('product.brand','like',"%$search%")
-        //                 ->orWhere('product.description','like',"%$search%")
-        //                 ->orWhere('product.uniqueCode','like',"%$search%")
-        //                 ->orWhere('category.name','like',"%$search%")
-        //                 ->distinct()
-        //                 ->get(['category.*']);
-        $category = Product::leftJoin('category as ca','ca.id','product.category_id')
-                            ->orWhere('product.name','like',"%$search%")
-                            ->orWhere('product.modelo','like',"%$search%")
-                            ->orWhere('product.brand','like',"%$search%")
-                            ->orWhere('product.description','like',"%$search%")
-                            ->orWhere('product.uniqueCode','like',"%$search%")
-                            ->orWhere('ca.name','like',"%$search%") 
-                            ->distinct()
-                            ->get(['ca.*']);
-                
-        if(count($product)>0 || count($category)>0){
-            return response()
-            ->json([
-                'product' => $product,
-                'category'=> $category
-            ]);
-        }else{
-            echo('vacio');
-            // return false;
-        }
-        
 
-    }
-  
 }

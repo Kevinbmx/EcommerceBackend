@@ -22,7 +22,7 @@ class Product extends Model
     protected $casts = [
         // 'hasChildren' => 'boolean',
         'created_at' => 'datetime:Y-m-d',
-     ];
+    ];
 
     public function file(){
         return $this->hasMany(File::class,'product_id');

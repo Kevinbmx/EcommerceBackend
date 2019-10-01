@@ -20,7 +20,6 @@ class CreateBlendAttributeValuesTable extends Migration
             $table->integer('atributoValor_id');
             $table->integer('atributoValorB_id')->nullable()->default(null);
             $table->uuid('uniqueCode');
-           
             $table->timestamps();
         });
     }
