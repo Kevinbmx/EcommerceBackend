@@ -27,6 +27,7 @@ class UpgradeColumnDirectionIdTablePedido extends Migration
     public function down()
     {
         Schema::table('pedido', function (Blueprint $table) {
+            $table->dropForeign(['direction_id']);
             $table->dropColumn('direction_id');
         });
     }

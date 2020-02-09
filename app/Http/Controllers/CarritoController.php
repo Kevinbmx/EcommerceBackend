@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Carrito;
+use App\Model\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 
@@ -16,13 +17,37 @@ class CarritoController extends Controller
                 ->where('pedido_id', $pedido_id)
                 ->where('pedido.user_id',$user_id)
         ->get();
-
+       $wischlist = $this->changeCartProductForWishList($carrito);
         // $carrito->files()->get();
         // dd(empty($carrito));
-    
+            
         return  response()->json([
             'message' => 'create',
-            'carrito'=> $carrito]);
+            'carrito'=> $carrito,
+            'wishlist'=>$wischlist
+            ]);
+    }
+    public function changeCartProductForWishList($carrito){
+        $user_id = auth()->id();
+        $wischlist = '';
+        foreach ($carrito as $cart) {
+            if( $cart['product']['quantity'] < $cart['quantity']){
+                try{
+                    Wishlist::Create(['user_id' => $user_id, 'product_id'=>$cart['product']['id']]);
+                    $wischlist = 'se ha añadido un producto a lista de deceo';
+                }
+                catch (QueryException $e) {
+                    // $errorCode = $e->errorInfo[1];
+                    // // return $errorCode;
+                    // if($errorCode == 1062){
+                    //    echo ("duplicado");
+                    // }
+                }
+               $this->destroy($cart['product']['id'], $cart['pedido_id']);
+            }
+        }
+        // $wischlist = Wishlist::where('user_id',$user_id)->get();
+        return  $wischlist;
     }
     public function createOrUpdate(Request $request)
     {

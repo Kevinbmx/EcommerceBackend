@@ -40,6 +40,8 @@ Route::middleware('auth:api')->group(function(){
         Route::get('/pedidoByUserId','PedidoController@pedidoByUserId');
         Route::post('/pedido','PedidoController@store');
         Route::get('/product','ProductController@index');
+        Route::post('/pedido/{id}','PedidoController@update');
+        Route::post('/productAccordingPedido','ProductController@updateProductAccoodingPedido');
     //==================================================================
 
     //===================rutas de categoria============================

@@ -15,9 +15,9 @@ class CreatePedidoTable extends Migration
     {
         Schema::create('pedido', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('estado')->default('carrito');
-            $table->date('fecha_entrega')->nullable();
-            $table->date('fecha_anulacion')->nullable();
+            $table->enum('estado', ['carrito', 'confirmado', 'en_camino','entregado','anulado'])->default('carrito');
+            $table->dateTime('fecha_entrega')->nullable();
+            $table->dateTime('fecha_anulacion')->nullable();
             $table->string('motivo_anulacion')->nullable();
             $table->double('total', 8, 2)->default(0.00);
             $table->integer('user_id')->unsigned()->nullable();

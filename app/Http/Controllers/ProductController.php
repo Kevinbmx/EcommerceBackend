@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use Illuminate\Http\Request;
 use App\Model\Product;
 use App\Model\Category;
@@ -81,8 +82,47 @@ class ProductController extends Controller
             ]);
     }
 
+    public function updateProductAccoodingPedido(Request $request){
+        $isupdated = false;
+        // return $request;
+        // return $request->request->all() ;
+        DB::beginTransaction();
+        try{
+            $productUpdate = 0;
+            foreach ($request->request->all() as $carrito) { 
+                // $respuesta = $this->update($carrito['product'],$carrito['product']['id']);
+                $product = Product::findOrFail($carrito['product']['id']);
+                if($carrito['quantity']  <= $product['quantity']){
+                    $product['quantity'] -= $carrito['quantity'];
+                    $product->update(['quantity' => $product['quantity']]);
+                    // return $product;
+                    $productUpdate ++;
+                }
+            }
+            if($productUpdate < count($request->request->all())){
+                DB::rollback();
+                $isupdated = false;
+            }else{
+              $isupdated = true;
+            }
+        } catch (\Exception $e) {
+            // echo ' , entra';
+            DB::rollback();
+            return response()
+            ->json([
+                'update' => false,
+            ]);
+        }
+        DB::commit();
+        return response()
+            ->json([
+                'update' => $isupdated ,
+            ]);
+    }
+
     public function update(Request $request, $idProduct)
     {
+        return $request;
         $this->validate($request, [
             'name' => 'required',   
             'modelo' => 'required',

@@ -39,38 +39,60 @@ class PedidoController extends Controller
         }
     }
 
-    public function update(Request $request, $idProduct)
+    public function update(Request $request, $id)
     {
         $this->validate($request, [
             'estado' => 'required',   
             'fecha_entrega' => 'required',
-            'fecha_anulacion' => 'required',
             'total' => 'required',
             'direction_id' => 'required',
         ]);
-        $product = Product::findOrFail($idProduct);
-        // return $request;
-        $product->update([
-            'name' => $request->name,
-            'modelo' => $request->modelo,
-            'quantity' => $request->quantity,
-            'brand' => $request->brand,
-            'price' => $request->price,
-            'category_id' =>$request->category_id,
-            'peso' => $request->peso,
-            'alto' => $request->alto,
-            'ancho'=> $request->ancho,
-            'fondo'=> $request->fondo,
-            'parent_id'=> $request->parent_id,
-            'statusProduct_id'=>$request->statusProduct_id,
-            'description'=>$request->description
-        ]);
-        return response()
-        ->json([
-            'saved' => true,
-            'product_id'=> $idProduct,
-            'type'=> 'update'
-        ]);
+        $user_id = auth()->id();
+        $pedido = Pedido::where('user_id',$user_id)
+                    ->where('id',$id);
+        if(count($pedido->get()) > 0){
+            $pedido->update([
+                'estado' => $request->estado,
+                'fecha_entrega' => $request->fecha_entrega,
+                'fecha_anulacion' => $request->fecha_anulacion,
+                'motivo_anulacion' => $request->motivo_anulacion,
+                'total' => $request->total,
+                'direction_id' => $request->direction_id,
+            ]);
+            return response()
+            ->json([
+                'updated' => true,
+                'pedido'=> $pedido->first(),
+                'type'=> 'update'
+            ]);
+        }else{
+            return response()
+            ->json([
+                'updated' => false,
+            ]);
+        }
+    }
+
+    public function updateProduct(Request $request)
+    {
+        return $request;
+        foreach($request as $carrito){
+            $product =  $carrito->product;
+            return $product;
+        }
+        // $this->validate($request, [
+        //     'quantity' => 'required|Integer|min:0',
+        // ]);
+        // $product = Product::findOrFail($idProduct);
+        // $product->update([
+        //     'quantity' => $request->quantity,
+        // ]);
+        // return response()
+        // ->json([
+        //     'saved' => true,
+        //     'product_id'=> $product-first(),
+        //     'type'=> 'update'
+        // ]);
     }
 
 
