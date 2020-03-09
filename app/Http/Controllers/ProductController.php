@@ -162,8 +162,7 @@ class ProductController extends Controller
 
     public function getById($idProduct)
     {  
-        $IdUser = auth()->id();
-        $ProductById = Product::where('id',$idProduct)->where('user_id',$IdUser)->get();
+        $ProductById = Product::where('id',$idProduct)->get();
         return $ProductById[0];
 
     }

@@ -18,6 +18,15 @@ class PedidoController extends Controller
         ]);
     }
 
+    public function tusPedidoConfirmadosByUserId(){
+        $user_id = auth()->id();
+        $pedido = Pedido::with('direction')->with('carrito.product.file')->where('user_id',$user_id)->whereNotIn('estado', ['carrito'])->paginate(2);
+        
+        // dd(empty($pedido));
+        // return  $pedido;
+        return response()->json($pedido);
+    }
+
     public function store()
     {
         try{
@@ -73,26 +82,22 @@ class PedidoController extends Controller
         }
     }
 
-    public function updateProduct(Request $request)
+    public function motivoAnularPedido(Request $request)
     {
-        return $request;
-        foreach($request as $carrito){
-            $product =  $carrito->product;
-            return $product;
-        }
-        // $this->validate($request, [
-        //     'quantity' => 'required|Integer|min:0',
-        // ]);
-        // $product = Product::findOrFail($idProduct);
-        // $product->update([
-        //     'quantity' => $request->quantity,
-        // ]);
-        // return response()
-        // ->json([
-        //     'saved' => true,
-        //     'product_id'=> $product-first(),
-        //     'type'=> 'update'
-        // ]);
+        $this->validate($request, [
+            'pedido_id' => 'required',
+            'motivo_anulacion' => 'required',   
+            'fecha_anulacion' => 'required'
+        ]);
+        $user_id = auth()->id();
+        $pedido = Pedido::where('user_id',$user_id)
+                    ->where('id',$request->pedido_id)->update(['motivo_anulacion' => $request->motivo_anulacion,'fecha_anulacion' => $request->fecha_anulacion,'estado' => 'anulado']);
+        return response()
+        ->json([
+            'updated' => true,
+            'pedido'=> $pedido,
+            'type'=> 'anulado'
+        ]);
     }
 
 

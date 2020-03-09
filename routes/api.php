@@ -42,6 +42,10 @@ Route::middleware('auth:api')->group(function(){
         Route::get('/product','ProductController@index');
         Route::post('/pedido/{id}','PedidoController@update');
         Route::post('/productAccordingPedido','ProductController@updateProductAccoodingPedido');
+        Route::get('/tusPedidoConfirmado','PedidoController@tusPedidoConfirmadosByUserId');
+        Route::post('/motivoAnularPedido','PedidoController@motivoAnularPedido');
+
+        
     //==================================================================
 
     //===================rutas de categoria============================
