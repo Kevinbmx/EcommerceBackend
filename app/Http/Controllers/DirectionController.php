@@ -8,10 +8,14 @@ use Illuminate\Http\Request;
 class DirectionController extends Controller
 {
 
-public function getDirectionsByUserId()
+public function getDirectionsByUserId(Request $request)
 {
-    $user_id = auth()->id();
-    $direction = Direction::where('user_id',$user_id)->get();
+    $user = auth('api')->user();
+    if(!is_null($user)){
+        $direction = Direction::where('user_id',$user->id)->get();
+    }else{
+        $direction = null;
+    }
     return response()
     ->json([
         'direction'=> $direction,

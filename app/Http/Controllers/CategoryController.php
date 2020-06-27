@@ -4,37 +4,55 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Model\Category;
+use Acceso;
 
 class CategoryController extends Controller
 {
     private $parentCategory = array();
     
     public function index(){
-        return Category::tree();
+        $hasPermission = false;
+        $CategoryTree ='';
+        if(Acceso::hasPermission(Acceso::getListarCategoria())){
+            $CategoryTree = Category::tree();
+            $hasPermission = true;
+        }
+        return response()
+        ->json([
+            'hasPermission' => $hasPermission,
+            'CategoryTree'=> $CategoryTree,
+            
+        ]);
     }
    
     public function categoryParent(){
-        return Category::where('parent_id',0)->get();
+        if(Acceso::hasPermission(Acceso::getListarCategoria())){
+            return Category::where('parent_id',0)->get();
+        }
     }
     public function store(Request $request)
-    {
-        $data = $request->validate([
-            'name' => 'required|string',
-            'parent_id' => 'required',
-            'path'=>'required'
-        ]);
-        $category = Category::create([
-            'name' => $request->name,
-            'parent_id' => $request->parent_id,
-            'path' => $request->path
-        ]);
-        $allCategories= $this->index();
-        return response($allCategories, 201);
+    {  
+        if(Acceso::hasPermission(Acceso::getCrearCategoria())){
+            $data = $request->validate([
+                'name' => 'required|string',
+                'parent_id' => 'required',
+                'path'=>'required'
+            ]);
+            $category = Category::create([
+                'name' => $request->name,
+                'parent_id' => $request->parent_id,
+                'path' => $request->path
+            ]);
+            $allCategories= $this->index();
+            return response($allCategories, 201);
+        }
     }
 
     public function byId($categoryId){
-        $category = Category::find($categoryId);
-        return $category;
+        if(Acceso::hasPermission(Acceso::getActualizarCategoria())){
+            $category = Category::find($categoryId);
+            return $category;
+        }
     }
 /**
  * addParent
@@ -43,29 +61,33 @@ class CategoryController extends Controller
  */
     public function addParent(Request $request)
     {
-        $checkedCategories = $request->input('checkedCategories');
-        $nameCategory = $request->input('name');
-        $parent_id= $request->input('parent_id');
+        if(Acceso::hasPermission(Acceso::getCrearCategoria())){
+            $checkedCategories = $request->input('checkedCategories');
+            // $nameCategory = $request->input('name');
+            // $parent_id= $request->input('parent_id');
 
-        $data = $request->validate([
-            'name' => 'required|string',
-            'parent_id' => 'required',
-        ]);
-        $newCategory = Category::create([
-            'name' => $nameCategory,
-            'parent_id' => $parent_id,
-        ]);
+            $data = $request->validate([
+                'name' => 'required|string',
+                'parent_id' => 'required',
+                'path'=>'required'
+            ]);
+            $newCategory = Category::create([
+                'name' => $request->name,
+                'parent_id' => $request->parent_id,
+                'path' => $request->path
+            ]);
 
-        if (empty($checkedCategories)){
-            return 'no tiene categorias chequeadas';
+            if (empty($checkedCategories)){
+                return 'no tiene categorias chequeadas';
+            }
+
+            foreach($checkedCategories as $categoryChange){
+                $cambio = Category::where('id',$categoryChange['id'])
+                ->update(['parent_id' => $newCategory->id]);
+            }
+            $allCategories= $this->index();
+            return response($allCategories, 201);
         }
-
-        foreach($checkedCategories as $categoryChange){
-            $cambio = Category::where('id',$categoryChange['id'])
-            ->update(['parent_id' => $newCategory->id]);
-        }
-        $allCategories= $this->index();
-        return response($allCategories, 201);
     }
     //---------------para el main page-----------------------
     public function getRandomCategory(){
@@ -86,26 +108,30 @@ class CategoryController extends Controller
     //     return response($category, 200);
     // }
     public function update(Request $request,$id){
-        $data = $request->validate([
-            'path' => 'required|string',    
-            'pathName' => 'required|string',
-        ]);
-        $category = Category::find($id);
+        if(Acceso::hasPermission(Acceso::getActualizarCategoria())){
+            $data = $request->validate([
+                'path' => 'required|string',    
+                'pathName' => 'required|string',
+            ]);
+            $category = Category::find($id);
 
-        $category->path = $request->path;
-        $category->pathName = $request->pathName;
+            $category->path = $request->path;
+            $category->pathName = $request->pathName;
 
-        $category->save();
-       return response($category,201);
+            $category->save();
+            return response($category,201);
+        }
     }
 
     public function destroy(Category $category )
     {  
-        Category::where('parent_id',$category->id)
-        ->update(['parent_id' => $category->parent_id]);
-        $category->delete();
-        $allCategories= $this->index();
-        return response($allCategories, 201);
+        if(Acceso::hasPermission(Acceso::getEliminarCategoria())){
+            Category::where('parent_id',$category->id)
+            ->update(['parent_id' => $category->parent_id]);
+            $category->delete();
+            $allCategories= $this->index();
+            return response($allCategories, 201);
+        }
     }
 
 
@@ -120,10 +146,13 @@ class CategoryController extends Controller
                 return $this->parentCategory  ;
             }
         }
-      
     }
 
-    public function getpruebas(){
-        return Category::with('products')->get();
+    public function getchildCategory(){
+        return Category::with('children')->where('parent_id',0)->orderBy('name', 'asc')->get();
     }
+
+    // public function getpruebas(){
+    //     return Category::with('products')->get();
+    // }
 }

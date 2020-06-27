@@ -22,25 +22,78 @@ use Illuminate\Http\Request;
 Route::post('/login','AuthController@login');
 Route::post('/register','AuthController@register');
 //=======================================================================
+ //=============================== main page=========================================
+    /**
+     * page product Detail
+     */
+    Route::get('/fileOfProduct/{productId}','ProductDetailController@getFileOfProduct');
+    Route::get('/productDetail/{productId}','ProductDetailController@getProductDetail');
+    // Route::get('/getRelatedProductbyCategoryId/{id}','ProductDetailController@getRelatedProductbyCategoryId');
+//==================================================================================
+
+
+/**
+ * page search everithing in the main page
+ */
+    Route::get('/getchildCategoryById/{id}','SearchController@getchildCategoryById');
+    Route::get('/getRelatedProductbyCategoryId/{id}','SearchController@getRelatedProductbyCategoryId');
+    Route::get('/getRelatedProductAndCategorybySearch/{search}','SearchController@searchProduct');
+//==================================================================================
+
+// page carrito
+// ======================inserta o actualiza los datos==========================
+    Route::get('/carrito/{pedodo_id}','CarritoController@carritoByPedidoId');
+    Route::post('/carrito','CarritoController@createOrUpdate');
+    Route::post('/carrito/{product_id}/{pedido_id}','CarritoController@destroy');
+    
+
+//====================ruta de subida de caracteristica============================
+    Route::post('/characteristic','CharacteristicController@store');
+    Route::post('/characteristic/{id}','CharacteristicController@update');
+
+    Route::get('/characteristic/{product_id}','CharacteristicController@getByProductId');
+    Route::delete('/characteristic/{id}','CharacteristicController@destroy');
+
+
+    //===================================ruta categoria=========================================
+    Route::get('/categoryRandom','CategoryController@getRandomCategory');
+    Route::get('/getchildCategory','CategoryController@getchildCategory');
+    Route::get('/categoryParent','CategoryController@categoryParent');
+
+
+    //===================================ruta producto========================================
+    Route::get('/productRandom','ProductController@getRandomProduct');
+
+    //=====================================pedido===============================================
+    Route::get('/pedidoByUserId','PedidoController@pedidoByUserId');
+    Route::get('/pedidoById/{id}','PedidoController@pedidoById');
+    Route::post('/pedido','PedidoController@store');
+
+    // ============================ruta de direcciones de envio ====================================
+    Route::get('/direction','DirectionController@getDirectionsByUserId');
+
+
 Route::middleware('auth:api')->group(function(){
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
+    Route::get('/user', 'UserController@index');
+    Route::post('/user', 'UserController@create');
+    Route::post('/user/{id}','UserController@update');
+
+    // Route::get('/user', function (Request $request) {
+    //     return $request->user();
+    // });
     Route::post('/logout','AuthController@logout');
     
     //====================ruta de productos=============================
+        Route::get('/product','ProductController@index');
         Route::get('/product/{id}','ProductController@getById');
         Route::post('/product','ProductController@store');
         Route::post('/product/{id}','ProductController@update');
         Route::delete('/product/{category}', 'ProductController@destroy');
-        Route::get('/productRandom','ProductController@getRandomProduct');
     //==================================================================
 
     //==============================pedido==============================
-        Route::get('/pedidoByUserId','PedidoController@pedidoByUserId');
-        Route::post('/pedido','PedidoController@store');
-        Route::get('/product','ProductController@index');
         Route::post('/pedido/{id}','PedidoController@update');
+        Route::delete('/pedido/{id}','PedidoController@destroy');
         Route::post('/productAccordingPedido','ProductController@updateProductAccoodingPedido');
         Route::get('/tusPedidoConfirmado','PedidoController@tusPedidoConfirmadosByUserId');
         Route::post('/motivoAnularPedido','PedidoController@motivoAnularPedido');
@@ -50,14 +103,14 @@ Route::middleware('auth:api')->group(function(){
 
     //===================rutas de categoria============================
         Route::get('/category','CategoryController@index');
-        Route::get('/categoryParent','CategoryController@categoryParent');
         Route::post('/category','CategoryController@store');
         // Route::post('/category/{category}','CategoryController@update');
         Route::post('/category/{id}','CategoryController@update');
         Route::delete('/category/{category}', 'CategoryController@destroy');
         Route::post('/addParent', 'CategoryController@addParent');
         Route::get('/category/{category}','CategoryController@byId');
-        Route::get('/categoryRandom','CategoryController@getRandomCategory');
+   
+
     //==================================================================
 
     //ejemplos
@@ -91,55 +144,49 @@ Route::middleware('auth:api')->group(function(){
         Route::delete('/file/{id}','FileController@destroy');
 
     //=================================================================================
-    //=================================================================================
-    //=============================== main page=========================================
-    /**
-     * page product Detail
-     */
-        Route::get('/fileOfProduct/{productId}','ProductDetailController@getFileOfProduct');
-        Route::get('/productDetail/{productId}','ProductDetailController@getProductDetail');
-        // Route::get('/getRelatedProductbyCategoryId/{id}','ProductDetailController@getRelatedProductbyCategoryId');
-    //==================================================================================
-
-    /**
-     * page categories
-     */
-        Route::get('/getchildCategory','CategoriesController@getchildCategory');
-    //==================================================================================
-
-    /**
-     * page search everithing in the main page
-     */
-        Route::get('/getchildCategoryById/{id}','SearchController@getchildCategoryById');
-        Route::get('/getRelatedProductbyCategoryId/{id}','SearchController@getRelatedProductbyCategoryId');
-        Route::get('/getRelatedProductAndCategorybySearch/{search}','SearchController@searchProduct');
-    //==================================================================================
-
-    // page carrito
-    // ======================inserta o actualiza los datos==========================
-        Route::get('/carrito/{pedodo_id}','CarritoController@carritoByPedidoId');
-        Route::post('/carrito','CarritoController@createOrUpdate');
-        Route::delete('/carrito/{id}/{pedido_id}','CarritoController@destroy');
-        
-
-    //====================ruta de subida de caracteristica============================
-        Route::post('/characteristic','CharacteristicController@store');
-        Route::post('/characteristic/{id}','CharacteristicController@update');
-
-        Route::get('/characteristic/{product_id}','CharacteristicController@getByProductId');
-        Route::delete('/characteristic/{id}','CharacteristicController@destroy');
-
     // ============================ruta de direcciones de envio ====================================
-    Route::get('/direction','DirectionController@getDirectionsByUserId');
     Route::post('/direction','DirectionController@store');
+
+    //=================================================================================
+   
+    //=========================seguridad=================================    
+    //===================rutas de modulo=================================
+        Route::get('/module','ModuleController@index');
+        Route::get('/module/{id}','ModuleController@moduleById');
+        Route::post('/module','ModuleController@store');
+        Route::post('/module/{id}','ModuleController@update');
+        Route::delete('/module/{id}','ModuleController@destroy');
+
+    //====================================================================
+    //===================rutas de permiso=================================
+        Route::get('/permission','PermissionController@index');
+        Route::get('/permission/{id}','PermissionController@permissionById');
+        Route::get('/permisosPorModulo/{idModulo}','PermissionController@ver');
+        Route::post('/permission','PermissionController@store');
+        Route::post('/permission/{id}','PermissionController@update');
+        Route::delete('/permission/{id}','PermissionController@destroy');
+        Route::post('/hasThisPermission','PermissionController@hasThisPermission');
+        
+    //====================================================================
+    //=======================rutas de roles================================
+        Route::get('/role','RoleController@index');
+        Route::get('/role/{id}','RoleController@roleById');
+        Route::post('/role','RoleController@store');
+        Route::post('/role/{id}','RoleController@update');
+        Route::delete('/role/{id}','RoleController@destroy');
+    //======================================================================
+
+    //====================rutas de roles_permiso============================
+        Route::get('/rolepermission','RolePermissionController@index');
+        Route::get('/accesPermissionsByUserToken','RolePermissionController@accesPermissionsByUserToken');
+        Route::post('/accesPermissions/{idRole}','RolePermissionController@accesPermissions');
+        Route::post('/permissionsWithoutAcces/{idRole}','RolePermissionController@permissionsWithoutAcces');
+
+        
+        Route::post('/addRolepermission/{idRole}','RolePermissionController@store');
+        Route::post('/removeRolepermission/{idRole}','RolePermissionController@destroy');
+        Route::get('/rolepermission/module','RolePermissionController@getAllModule');
+    //=======================================================================
+    //========================================================================
+        Route::get('/getUserByToken','UserController@getUserByToken');
 });
-
-
-
-
-
-
-
-
-
-

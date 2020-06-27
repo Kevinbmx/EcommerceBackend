@@ -214,6 +214,8 @@ return [
 
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
+        
+        'Acceso' => App\Helper\Acceso::class
 
     ],
 

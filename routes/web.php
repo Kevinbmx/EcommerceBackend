@@ -36,7 +36,6 @@
 
 // Route::middleware(['auth:api'])->group(function(){
 //     Route::group(['prefix' => 'admin/'], function() {
-        Route::resource('api/user', 'UserController');
         // Route::resource('invoice', 'InvoiceController');
 //     });
 // });

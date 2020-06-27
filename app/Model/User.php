@@ -22,7 +22,7 @@ class User extends Authenticatable
     protected $table = 'users';
 
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'role_id'
     ];
 
     protected $filter = [
@@ -42,7 +42,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token','id'
     ];
 
 
@@ -50,4 +50,7 @@ class User extends Authenticatable
         return $this->hasMany('App\model\Product');
     }
    
+    public function rol(){
+        return $this->hasOne('App\model\Rol');
+    }
 }

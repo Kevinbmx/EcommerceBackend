@@ -11,20 +11,21 @@ class CarritoController extends Controller
 {
     public function carritoByPedidoId($pedido_id){
         // dd($pedido_id);
-        $user_id = auth()->id();
+        // $user = auth('api')->user();
+        // return $user;
         $carrito = Carrito::with('product.file')
-                ->join('pedido','pedido.id', 'pedido_id')
-                ->where('pedido_id', $pedido_id)
-                ->where('pedido.user_id',$user_id)
-        ->get();
-       $wischlist = $this->changeCartProductForWishList($carrito);
-        // $carrito->files()->get();
-        // dd(empty($carrito));
-            
+            ->join('pedido','pedido.id', 'pedido_id')
+            ->where('pedido_id', $pedido_id)
+            // ->when(!is_null($user),function ($query) use ($user){
+            //     return $query ->where('pedido.user_id',$user->id);
+            // })
+            ->get();
+        // $wischlist = $this->changeCartProductForWishList($carrito);
+    
         return  response()->json([
-            'message' => 'create',
+            'message' => 'selected',
             'carrito'=> $carrito,
-            'wishlist'=>$wischlist
+            // 'wishlist'=>$wischlist
             ]);
     }
     public function changeCartProductForWishList($carrito){
@@ -63,8 +64,9 @@ class CarritoController extends Controller
             ['price' => $request->price,'quantity' => $request->quantity]);
             $selectAllCarrito = $this->carritoByPedidoId($carrito->pedido_id);
             // dd($selectAllCarrito->getData()->carrito);
+            // return $carrito;
             return response()->json([
-                'message' => 'create',
+                'create' => true,
                 'carrito'=> $selectAllCarrito->getData()->carrito]);
         } 
         catch (QueryException $e) {
@@ -81,16 +83,19 @@ class CarritoController extends Controller
     public function destroy($product_id,$pedido_id)
     {
         $message = true;
-        $user_id = auth()->id();
+        $user = auth('api')->user();
+        // return $user;
         $carrito = Carrito::join('pedido','pedido.id', 'pedido_id')
                 ->where('pedido_id', $pedido_id)
-                ->where('pedido.user_id',$user_id)
+                ->when(!is_null($user),function ($query) use ($user){
+                    return $query->where('pedido.user_id',$user->id);
+                })
                 ->where('carrito.product_id',$product_id)
-        ->delete();
-        // dd($carrito);
+                ->delete();
         if($carrito == 0){
             $message = false;
         }
+        // return $carrito;
         return response()
             ->json([
                 'deleted' => $message

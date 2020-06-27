@@ -26,7 +26,7 @@ class UserController extends Controller
         //     'model' => User::filterPaginateOrder()
         // ]);
         //  return User::orderBy('id','DESC')->get();
-         return User::all();
+         return User::paginate(10);
     }
 
     public function create()
@@ -44,13 +44,15 @@ class UserController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
+            'role_id' => 'required'
         ]); 
 
         $users = new User;
         $users->name = $request->name;
         $users->email = $request->email;
         $users->password = bcrypt($request->password);
+        $users->role_id = $request->role_id;
         $users->save();
         // $create = Post::create($request->all());
         return response()
@@ -87,11 +89,16 @@ class UserController extends Controller
         $this->validate($request, [
             'name' => 'required',
             'email' => 'required|email',
+            'role_id' => 'required|Integer',
         ]);
 
-        $User = User::findOrFail($id);
-        // dd($user);
-        $User->update($request->all());
+        $user = User::findOrFail($id);
+        // return($request->role_id);
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'role_id' => $request->role_id,
+        ]);
 
         return response()
             ->json([
@@ -111,5 +118,9 @@ class UserController extends Controller
             ->json([
                 'deleted' => true
             ]);
+    }
+    public function getUserByToken(){
+        $user = auth('api')->user();
+        return $user;
     }
 }

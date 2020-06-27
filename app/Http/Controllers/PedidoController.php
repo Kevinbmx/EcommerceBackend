@@ -3,14 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\Model\Pedido;
+use App\Model\Carrito;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Auth;
 
 class PedidoController extends Controller
 {
-    public function pedidoByUserId(){
-        $user_id = auth()->id();
-        $pedido = Pedido::where('user_id',$user_id)->where('estado','carrito')->first();
-        // dd(empty($pedido));
+    public function pedidoByUserId(Request $request){
+        // return $user_id;
+        $user = auth('api')->user();
+        // return $user;
+        if(!is_null($user)){
+            $pedido = Pedido::where('estado','=','carrito')
+                ->where('user_id',$user->id)
+                ->first();
+        }else{
+            $pedido = null;
+        }
+        
+        return response()
+        ->json([
+            'message'=>'selected',
+            'pedido'=> $pedido
+        ]);
+    }
+
+    public function pedidoById($id){
+        $pedido = Pedido::where('estado','=','carrito')
+                ->where('id',$id)
+                ->first();
         return response()
         ->json([
             'message'=>'selected',
@@ -27,11 +49,15 @@ class PedidoController extends Controller
         return response()->json($pedido);
     }
 
-    public function store()
+    public function store(Request $request)
     {
         try{
-            $user_id = auth()->id();
-            $pedido = Pedido::firstOrCreate(['user_id' => $user_id,'estado'=> 'carrito']);
+            if(!is_null(auth('api')->user())){
+                $user_id = $request->user('api')->id;
+            }else{
+                $user_id = null;
+            }
+            $pedido = Pedido::create(['user_id' => $user_id,'estado'=> 'carrito']);
             return response()
             ->json([
                 'message'=>'create',
@@ -56,29 +82,31 @@ class PedidoController extends Controller
             'total' => 'required',
             'direction_id' => 'required',
         ]);
-        $user_id = auth()->id();
-        $pedido = Pedido::where('user_id',$user_id)
-                    ->where('id',$id);
-        if(count($pedido->get()) > 0){
-            $pedido->update([
-                'estado' => $request->estado,
-                'fecha_entrega' => $request->fecha_entrega,
-                'fecha_anulacion' => $request->fecha_anulacion,
-                'motivo_anulacion' => $request->motivo_anulacion,
-                'total' => $request->total,
-                'direction_id' => $request->direction_id,
-            ]);
+        // $user_id = auth()->id();
+        $user_id = $request->user('api')->id;
+        try {
+            $pedido = Pedido::where('id',$id)->update([
+                    'estado' => $request->estado,
+                    'direction_id' => $request->direction_id,
+                    'fecha_entrega' => $request->fecha_entrega,
+                    'fecha_anulacion' => $request->fecha_anulacion,
+                    'motivo_anulacion' => $request->motivo_anulacion,
+                    'total' => $request->total,
+                    'user_id' => $user_id
+                    ]);
+                    return response()
+                ->json([
+                    'updated' => true,
+                    'pedido'=> $pedido,
+                    'type'=> 'update'
+                ]);
+        } catch (\Throwable $th) {
             return response()
-            ->json([
-                'updated' => true,
-                'pedido'=> $pedido->first(),
-                'type'=> 'update'
-            ]);
-        }else{
-            return response()
-            ->json([
-                'updated' => false,
-            ]);
+                ->json([
+                    'updated' => false,
+                    'pedido'=> [],
+                    'type'=> 'update'
+                ]);
         }
     }
 
@@ -98,6 +126,20 @@ class PedidoController extends Controller
             'pedido'=> $pedido,
             'type'=> 'anulado'
         ]);
+    }
+
+    public function destroy($id){
+        try {
+            $carrito = Carrito::where('pedido_id',$id)->delete();
+            $pedido = Pedido::where('id',$id)->delete();
+            return response()
+            ->json([
+                'delete' => true,
+            ]);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+        
     }
 
 

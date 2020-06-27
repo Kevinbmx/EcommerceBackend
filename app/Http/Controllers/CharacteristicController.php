@@ -93,15 +93,11 @@ class CharacteristicController extends Controller
         $this->validate($request, [
             'product_id' => 'required',   
             'characteristic' => 'required',
-            'path'=> 'required',
-            'pathName'=>'required'
         ]);
         $characteristic = Characteristic::findOrFail($id);
         $characteristic->update([
             'product_id' => $request->product_id,
             'characteristic' => $request->characteristic,
-            'path' => $request->path,
-            'pathName' => $request->pathName
         ]);
         return response()
         ->json([
