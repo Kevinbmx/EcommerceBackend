@@ -24,14 +24,14 @@ class ProductController extends Controller
         ->json([
             'hasPermission' => $hasPermission,
             'productWithUser'=> $productWithUser,
-            
+
         ]);
         // ----------------------------------------------
     }
     //---------------para el main page (no tinee que tener permiso)-----------------------
     public function getRandomProduct(){
         $product=Product::with('file')->get()->random(6);
-        return $product;        
+        return $product;
     }
     //-------------------------------------------------------------
 
@@ -39,7 +39,7 @@ class ProductController extends Controller
     {
         if(Acceso::hasPermission(Acceso::getCrearProducto())){
             $this->validate($request, [
-                'name' => 'required',   
+                'name' => 'required',
                 'modelo' => 'required',
                 'quantity' => 'required|Integer|min:0',
                 'brand' => 'required',
@@ -80,14 +80,14 @@ class ProductController extends Controller
     }
 
     public function updateProductAccoodingPedido(Request $request){
-        if(Acceso::hasPermission(Acceso::getActualizarProducto())){
+        // if(Acceso::hasPermission(Acceso::getActualizarProducto())){
             $isupdated = false;
             // return $request;
             // return $request->request->all() ;
             DB::beginTransaction();
             try{
                 $productUpdate = 0;
-                foreach ($request->request->all() as $carrito) { 
+                foreach ($request->request->all() as $carrito) {
                     // $respuesta = $this->update($carrito['product'],$carrito['product']['id']);
                     $product = Product::findOrFail($carrito['product']['id']);
                     if($carrito['quantity']  <= $product['quantity']){
@@ -116,7 +116,7 @@ class ProductController extends Controller
                 ->json([
                     'update' => $isupdated ,
                 ]);
-        }
+        // }
     }
 
     public function update(Request $request, $idProduct)
@@ -124,7 +124,7 @@ class ProductController extends Controller
         if(Acceso::hasPermission(Acceso::getActualizarProducto())){
         // return $request;
             $this->validate($request, [
-                'name' => 'required',   
+                'name' => 'required',
                 'modelo' => 'required',
                 'quantity' => 'required|Integer|min:0',
                 'brand' => 'required',
@@ -162,7 +162,7 @@ class ProductController extends Controller
     }
 
     public function getById($idProduct)
-    {  
+    {
         $hasPermission = false;
         $ProductById ='';
         if(Acceso::hasPermission(Acceso::getActualizarProducto())){
@@ -173,12 +173,12 @@ class ProductController extends Controller
         ->json([
             'hasPermission' => $hasPermission,
             'ProductById'=> $ProductById,
-            
+
         ]);
     }
-    
+
     public function destroy(Product $product )
-    {  
+    {
     }
 
 

@@ -9,7 +9,7 @@ use Acceso;
 class CategoryController extends Controller
 {
     private $parentCategory = array();
-    
+
     public function index(){
         $hasPermission = false;
         $CategoryTree ='';
@@ -21,17 +21,18 @@ class CategoryController extends Controller
         ->json([
             'hasPermission' => $hasPermission,
             'CategoryTree'=> $CategoryTree,
-            
+
         ]);
     }
-   
+
+    //no necesita permiso
     public function categoryParent(){
-        if(Acceso::hasPermission(Acceso::getListarCategoria())){
-            return Category::where('parent_id',0)->get();
-        }
+        return Category::where('parent_id',0)->get();
     }
     public function store(Request $request)
-    {  
+    {
+        $hasPermission = false;
+        $CategoryTree ='';
         if(Acceso::hasPermission(Acceso::getCrearCategoria())){
             $data = $request->validate([
                 'name' => 'required|string',
@@ -43,9 +44,15 @@ class CategoryController extends Controller
                 'parent_id' => $request->parent_id,
                 'path' => $request->path
             ]);
-            $allCategories= $this->index();
-            return response($allCategories, 201);
+            $CategoryTree = Category::tree();
+            $hasPermission = true;
         }
+        return response()
+        ->json([
+            'hasPermission' => $hasPermission,
+            'CategoryTree'=> $CategoryTree,
+
+        ]);
     }
 
     public function byId($categoryId){
@@ -56,16 +63,15 @@ class CategoryController extends Controller
     }
 /**
  * addParent
- * me obtiene el request del front end con los categorias chequeadas , el nombre, y el parent_id 
+ * me obtiene el request del front end con los categorias chequeadas , el nombre, y el parent_id
  * y asi crear un padre y modificar las anteriores al nuevo id que se creo....
  */
     public function addParent(Request $request)
     {
+        $hasPermission = true;
+        $CategoryTree = '';
         if(Acceso::hasPermission(Acceso::getCrearCategoria())){
             $checkedCategories = $request->input('checkedCategories');
-            // $nameCategory = $request->input('name');
-            // $parent_id= $request->input('parent_id');
-
             $data = $request->validate([
                 'name' => 'required|string',
                 'parent_id' => 'required',
@@ -80,19 +86,23 @@ class CategoryController extends Controller
             if (empty($checkedCategories)){
                 return 'no tiene categorias chequeadas';
             }
-
             foreach($checkedCategories as $categoryChange){
                 $cambio = Category::where('id',$categoryChange['id'])
                 ->update(['parent_id' => $newCategory->id]);
             }
-            $allCategories= $this->index();
-            return response($allCategories, 201);
+            $CategoryTree = Category::tree();
+            $hasPermission = true;
         }
+        return response()
+        ->json([
+            'hasPermission' => $hasPermission,
+            'CategoryTree'=> $CategoryTree,
+        ]);
     }
     //---------------para el main page-----------------------
     public function getRandomCategory(){
         $categories=Category::where('parent_id',0)->get()->random(4);
-        return $categories;        
+        return $categories;
     }
     //-------------------------------------------------------------
 
@@ -110,7 +120,7 @@ class CategoryController extends Controller
     public function update(Request $request,$id){
         if(Acceso::hasPermission(Acceso::getActualizarCategoria())){
             $data = $request->validate([
-                'path' => 'required|string',    
+                'path' => 'required|string',
                 'pathName' => 'required|string',
             ]);
             $category = Category::find($id);
@@ -124,14 +134,21 @@ class CategoryController extends Controller
     }
 
     public function destroy(Category $category )
-    {  
+    {
+        $hasPermission = false;
+        $CategoryTree ='';
         if(Acceso::hasPermission(Acceso::getEliminarCategoria())){
             Category::where('parent_id',$category->id)
             ->update(['parent_id' => $category->parent_id]);
             $category->delete();
-            $allCategories= $this->index();
-            return response($allCategories, 201);
+            $CategoryTree = Category::tree();
+            $hasPermission = true;
         }
+        return response()
+        ->json([
+            'hasPermission' => $hasPermission,
+            'CategoryTree'=> $CategoryTree,
+        ]);
     }
 
 

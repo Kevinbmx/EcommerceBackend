@@ -45,7 +45,7 @@ Route::post('/register','AuthController@register');
     Route::get('/carrito/{pedodo_id}','CarritoController@carritoByPedidoId');
     Route::post('/carrito','CarritoController@createOrUpdate');
     Route::post('/carrito/{product_id}/{pedido_id}','CarritoController@destroy');
-    
+
 
 //====================ruta de subida de caracteristica============================
     Route::post('/characteristic','CharacteristicController@store');
@@ -78,11 +78,11 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/user', 'UserController@create');
     Route::post('/user/{id}','UserController@update');
 
+    Route::post('/logout','AuthController@logout');
     // Route::get('/user', function (Request $request) {
     //     return $request->user();
     // });
-    Route::post('/logout','AuthController@logout');
-    
+
     //====================ruta de productos=============================
         Route::get('/product','ProductController@index');
         Route::get('/product/{id}','ProductController@getById');
@@ -92,13 +92,14 @@ Route::middleware('auth:api')->group(function(){
     //==================================================================
 
     //==============================pedido==============================
+        Route::post('/pedidoSearch','PedidoController@pedidoSearch');
         Route::post('/pedido/{id}','PedidoController@update');
         Route::delete('/pedido/{id}','PedidoController@destroy');
         Route::post('/productAccordingPedido','ProductController@updateProductAccoodingPedido');
         Route::get('/tusPedidoConfirmado','PedidoController@tusPedidoConfirmadosByUserId');
         Route::post('/motivoAnularPedido','PedidoController@motivoAnularPedido');
 
-        
+
     //==================================================================
 
     //===================rutas de categoria============================
@@ -109,7 +110,7 @@ Route::middleware('auth:api')->group(function(){
         Route::delete('/category/{category}', 'CategoryController@destroy');
         Route::post('/addParent', 'CategoryController@addParent');
         Route::get('/category/{category}','CategoryController@byId');
-   
+
 
     //==================================================================
 
@@ -148,8 +149,8 @@ Route::middleware('auth:api')->group(function(){
     Route::post('/direction','DirectionController@store');
 
     //=================================================================================
-   
-    //=========================seguridad=================================    
+
+    //=========================seguridad=================================
     //===================rutas de modulo=================================
         Route::get('/module','ModuleController@index');
         Route::get('/module/{id}','ModuleController@moduleById');
@@ -166,7 +167,7 @@ Route::middleware('auth:api')->group(function(){
         Route::post('/permission/{id}','PermissionController@update');
         Route::delete('/permission/{id}','PermissionController@destroy');
         Route::post('/hasThisPermission','PermissionController@hasThisPermission');
-        
+
     //====================================================================
     //=======================rutas de roles================================
         Route::get('/role','RoleController@index');
@@ -182,7 +183,7 @@ Route::middleware('auth:api')->group(function(){
         Route::post('/accesPermissions/{idRole}','RolePermissionController@accesPermissions');
         Route::post('/permissionsWithoutAcces/{idRole}','RolePermissionController@permissionsWithoutAcces');
 
-        
+
         Route::post('/addRolepermission/{idRole}','RolePermissionController@store');
         Route::post('/removeRolepermission/{idRole}','RolePermissionController@destroy');
         Route::get('/rolepermission/module','RolePermissionController@getAllModule');

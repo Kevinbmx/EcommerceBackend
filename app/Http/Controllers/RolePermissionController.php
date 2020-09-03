@@ -28,10 +28,10 @@ class RolePermissionController extends Controller
         ->json([
             'hasPermission' => $hasPermission,
             'rolePermission'=> $rolePermission,
-            
+
         ]);
     }
-    
+
     public function getAllModule()
     {
         $hasPermission = false;
@@ -39,7 +39,7 @@ class RolePermissionController extends Controller
         if(Acceso::hasPermission(Acceso::getActualizarAcceso())){
             $module = Module::all();
             $hasPermission = true;
-        } 
+        }
         return response()
         ->json([
             'hasPermission' => $hasPermission,
@@ -52,7 +52,7 @@ class RolePermissionController extends Controller
     public function accesPermissions(Request $request, $idRole)
     {
         $requestModuleId = $request->module_id;
-        
+
         $hasPermission = false;
         $rolePermission='';
         if(Acceso::hasPermission(Acceso::getActualizarAcceso())){
@@ -73,33 +73,25 @@ class RolePermissionController extends Controller
             'rolePermission'=> $rolePermission,
         ]);
     }
+    //este metodo no requiere tener accesos para usarlo
     public function accesPermissionsByUserToken()
     {
         $user = auth('api')->user();
-        // return $user->id;
-        $hasPermission = false;
-        $rolePermission='';
-        if(Acceso::hasPermission(Acceso::getActualizarAcceso())){
-            $rolePermission = DB::table('role_permissions')
-                    ->join('roles','role_permissions.role_id','=','roles.id')
-                    ->join('permissions','role_permissions.permission_id','=','permissions.id')
-                    ->join('modules','permissions.module_id','=','modules.id')
-                    ->join('users','roles.id','=','users.role_id')
-                    ->where('users.id',$user->id)
-                    ->get(['permissions.*']);
-            $hasPermission = true;
-        }
+        $rolePermission = DB::table('role_permissions')
+                ->join('roles','role_permissions.role_id','=','roles.id')
+                ->join('permissions','role_permissions.permission_id','=','permissions.id')
+                ->join('modules','permissions.module_id','=','modules.id')
+                ->join('users','roles.id','=','users.role_id')
+                ->where('users.id',$user->id)
+                ->get(['permissions.*']);
         return response()
         ->json([
-            'rolePermission' => $rolePermission,
-            'role_id' => $user->role_id,
-            'hasPermission' => $hasPermission,
+            'user' => $user,
             'rolePermission'=> $rolePermission,
-        ]);        
-        // return $rolePermission;
+        ]);
     }
 /**
- * esta funcion me devuelce los permisos que no tienen accesos 
+ * esta funcion me devuelce los permisos que no tienen accesos
  * la variable $requestModuleId tendran que poner ej: "and m.id in (1,2)"
  */
     public function permissionsWithoutAcces(Request $request, $idRole)
@@ -122,7 +114,7 @@ class RolePermissionController extends Controller
         ->json([
             'hasPermission' => $hasPermission,
             'permissionsWithoutAcces'=> $permissionsWithoutAcces,
-        ]);    
+        ]);
     }
 
     /**
@@ -138,7 +130,7 @@ class RolePermissionController extends Controller
         if(Acceso::hasPermission(Acceso::getActualizarAcceso())){
             $this->validate($request, [
                 'permission_id' => 'required',
-            ]); 
+            ]);
             // $permission_id = $request->permission_id;
             // $permission_id = json_decode($request->permission_id,true);
             $rolePermission = Role::find($idRole);
@@ -150,7 +142,7 @@ class RolePermissionController extends Controller
         ->json([
             'hasPermission' => $hasPermission,
             'rolePermission'=> $rolePermission,
-        ]);    
+        ]);
     }
 
 
@@ -158,7 +150,7 @@ class RolePermissionController extends Controller
      * Remove the specified resource from storage.
      * en la variable $permission_id puedo poner un solo permiso ej: 1
      * tambien puedo poner un array para eliminar en conjunto ej:[1,2]
-     * y si no pongo null me borrara todo lo que pertenesca al rol 
+     * y si no pongo null me borrara todo lo que pertenesca al rol
      */
     public function destroy(Request $request,$idRole)
     {
@@ -167,7 +159,7 @@ class RolePermissionController extends Controller
         if(Acceso::hasPermission(Acceso::getActualizarAcceso())){
             $this->validate($request, [
                 'permission_id' => 'required',
-            ]); 
+            ]);
             // $permission_id = $request->permission_id;
             // $permission_id = json_decode($request->permission_id,true);
             // return $permission_id;
@@ -179,6 +171,6 @@ class RolePermissionController extends Controller
         ->json([
             'hasPermission' => $hasPermission,
             'rolePermission'=> $rolePermission,
-        ]);   
+        ]);
     }
 }

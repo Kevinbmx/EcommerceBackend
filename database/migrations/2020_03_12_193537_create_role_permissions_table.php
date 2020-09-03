@@ -19,7 +19,6 @@ class CreateRolePermissionsTable extends Migration
             $table->foreign('role_id')->references('id')->on('roles');
             $table->foreign('permission_id')->references('id')->on('permissions');
             $table->unique(['role_id','permission_id']);
-            $table->timestamps();
         });
     }
 

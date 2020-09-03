@@ -15,11 +15,13 @@ class UsersTableSeeder extends Seeder
         App\Model\User::create([
             'name'=>'admin',
             'email'=>'admin@admin.com',
+            'role_id'=>'1',
             'password'=> bcrypt('secret')
         ]);
         App\Model\User::create([
             'name'=>'kevin delgadillo',
             'email'=>'kevi3195@gmail.com',
+            'role_id'=>'3',
             'password'=> bcrypt('secret')
         ]);
     //    Role::create([

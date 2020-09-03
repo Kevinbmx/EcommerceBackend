@@ -4,12 +4,13 @@ use DB;
 
 class Acceso
 {
+    //admin
     //---------------------------usuario----------------------------
     public static  $crearUsuario           =  "crear usuario";
     public static  $listarUsuario          =  'listar usuario';
     public static  $actualizarUsuario      =  'actualizar usuario';
     public static  $eliminarUsuario        =  'eliminar usuario';
-    
+
     //-----------------categoria--------------------
     public static  $crearCategoria       =  'crear categoria';
     public static  $listarCategoria      =  'listar categoria';
@@ -30,10 +31,8 @@ class Acceso
     public static  $eliminarModulo    =  'eliminar modulo';
 
     //-----------------accesos--------------------
-    public static $crearAcceso       =  'crear acceso';
     public static $listarAcceso      =  'listar acceso';
     public static $actualizarAcceso  =  'actualizar acceso';
-    public static $eliminarAcceso    =  'eliminar acceso';
 
     //-----------------permisos--------------------
     public static $crearPermiso       =  'crear permiso';
@@ -43,8 +42,19 @@ class Acceso
     public static $eliminarPermiso    =  'eliminar permiso';
 
     //-----------------roles--------------------
+    public static $crearRol       =  'crear rol';
     public static $listarRol      =  'listar rol';
     public static $actualizarRol  =  'actualizar rol';
+    public static $eliminarRol    =  'eliminar rol';
+    //-----------------pedido--------------------
+    public static $listarPedido      =  'listar pedido';
+    public static $anularPedidoAdmin      =  'anular pedido admin';
+    //-------------------------------------------------------
+    //-----------------pedido cliente--------------------
+     public static $listarPedidoCliente      =  'listar pedido cliente';
+     public static $anularPedidoCliente      =  'anular pedido cliente';
+    //-----------------------------------------------------------
+    //-------------------main page------------------------------
 
 
     //getters
@@ -65,7 +75,7 @@ class Acceso
     {
         return (self::$eliminarUsuario);
     }
-    
+
     //---------------------------categoria----------------------------
     public static  function getCrearCategoria ()
     {
@@ -122,7 +132,7 @@ class Acceso
         return (self::$eliminarModulo);
     }
       //---------------------------accesos----------------------------
-    
+
       public static  function getlistarAcceso ()
       {
           return (self::$listarAcceso);
@@ -131,7 +141,7 @@ class Acceso
       {
           return (self::$actualizarAcceso);
       }
-     
+
         //---------------------------permisos----------------------------
     public static  function getCrearPermiso ()
     {
@@ -170,6 +180,26 @@ class Acceso
       {
           return (self::$eliminarRol);
       }
+    //-----------------pedido--------------------
+    public static  function getListarPedido ()
+    {
+        return (self::$listarPedido);
+    }
+    public static  function getAnularPedidoAdmin ()
+    {
+        return (self::$anularPedidoAdmin);
+    }
+
+    //------------------pedido cliente---------------------
+    public static  function getListarPedidoCliente ()
+    {
+        return (self::$listarPedidoCliente);
+    }
+
+    public static  function getAnularPedidoCliente ()
+    {
+        return (self::$anularPedidoCliente);
+    }
 
     public static  function hasPermission($permiso){
         $user = auth('api')->user();

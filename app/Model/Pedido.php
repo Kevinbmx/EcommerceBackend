@@ -5,6 +5,8 @@ namespace App\model;
 use App\model\Carrito;
 use App\model\Product;
 use App\model\File;
+use App\model\User;
+
 // use App\model\Direction;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,14 +14,14 @@ class Pedido extends Model
 {
     protected $table = 'pedido';
 
-    protected $fillable = ['estado', 'fecha_entrega','fecha_anulacion','motivo_anulacion','total','user_id','created_at'];
+    protected $fillable = ['estado', 'fecha_entrega','fecha_anulacion','motivo_anulacion','total','user_id','created_at','updated_at'];
 
-    protected $hidden = ['updated_at'];
+    // protected $hidden = ['updated_at'];
 
     public function carrito(){
         return $this->hasMany(Carrito::class);
     }
-    
+
     public function product() {
         return $this->hasOne(Product::class, 'id', 'product_id');
     }
@@ -28,11 +30,14 @@ class Pedido extends Model
     }
 
     public function direction(){
-        return $this->hasMany(Direction::class,'id','direction_id');
+        return $this->hasOne(Direction::class,'id','direction_id');
     }
 
+    public function user() {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
 
-    // public function CarritoWithProductWithFile(){   
+    // public function CarritoWithProductWithFile(){
     //     return static::with('carrito')->with('product')->with('file');
     // }
 }

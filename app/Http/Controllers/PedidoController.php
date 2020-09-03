@@ -6,22 +6,20 @@ use App\Model\Pedido;
 use App\Model\Carrito;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Acceso;
 use Auth;
 
 class PedidoController extends Controller
 {
+    //-------------solo main page---------------
     public function pedidoByUserId(Request $request){
-        // return $user_id;
+        $pedido = null;
         $user = auth('api')->user();
-        // return $user;
         if(!is_null($user)){
             $pedido = Pedido::where('estado','=','carrito')
                 ->where('user_id',$user->id)
                 ->first();
-        }else{
-            $pedido = null;
         }
-        
         return response()
         ->json([
             'message'=>'selected',
@@ -40,15 +38,6 @@ class PedidoController extends Controller
         ]);
     }
 
-    public function tusPedidoConfirmadosByUserId(){
-        $user_id = auth()->id();
-        $pedido = Pedido::with('direction')->with('carrito.product.file')->where('user_id',$user_id)->whereNotIn('estado', ['carrito'])->paginate(2);
-        
-        // dd(empty($pedido));
-        // return  $pedido;
-        return response()->json($pedido);
-    }
-
     public function store(Request $request)
     {
         try{
@@ -58,6 +47,7 @@ class PedidoController extends Controller
                 $user_id = null;
             }
             $pedido = Pedido::create(['user_id' => $user_id,'estado'=> 'carrito']);
+            $pedido = Pedido::where('id',$pedido->id)->first();
             return response()
             ->json([
                 'message'=>'create',
@@ -73,15 +63,57 @@ class PedidoController extends Controller
             }
         }
     }
+// finalizacion del main--------------------------------------------------
 
+    //--------------------------------------------------------------
+    //----------------------------admin-----------------------------
+    // aqui tengo que entrar a vendo/laravel/framework/src/illuminate/database/query/builder.php
+    // y modifico la linea $this->wheres[] = compact('type', 'operator', 'query', 'boolean');
+    // por esto $this->wheres[] = compact('type',  'query', 'boolean');
+    public function pedidoSearch(Request $request){
+        $hasPermission = false;
+        $pedido='';
+        if(Acceso::hasPermission(Acceso::getListarPedido())){
+            $pedido = Pedido::when($request->search,function ($query) use ($request){
+                $query->whereHas('user', function ($query) use ($request) {
+                    $query->where('name', 'like', '%'.$request->search.'%')
+                    ->orWhere('email','like', '%'.$request->search.'%');
+                })->orWhereHas('direction', function ($query) use ($request) {
+                    $query->where('name', 'like', '%'.$request->search.'%')
+                    ->orWhere('direction','like', '%'.$request->search.'%');
+                });
+            })->orWhere('estado','like', '%'.$request->search.'%')
+            ->orWhere('id','=',$request->search)
+            ->with('user')->with('direction')->paginate(7);;
+            $hasPermission = true;
+        }
+        return response()
+        ->json([
+            'hasPermission' => $hasPermission,
+            'pedido'=> $pedido
+        ]);
+
+        // $hasPermission = false;
+        // $pedido='';
+        // if(Acceso::hasPermission(Acceso::getListarPedido())){
+        //     $pedido = Pedido::with('user')->with('direction')
+        //     ->get();
+        //     $hasPermission = true;
+        // }
+        // return response()
+        // ->json([
+        //     'hasPermission' => $hasPermission,
+        //     'pedido'=> $pedido
+        // ]);
+    }
     public function update(Request $request, $id)
     {
-        $this->validate($request, [
-            'estado' => 'required',   
-            'fecha_entrega' => 'required',
-            'total' => 'required',
-            'direction_id' => 'required',
-        ]);
+        // $this->validate($request, [
+        //     'estado' => 'required',
+        //     'fecha_entrega' => 'required',
+        //     'total' => 'required',
+        //     'direction_id' => 'required',
+        // ]);
         // $user_id = auth()->id();
         $user_id = $request->user('api')->id;
         try {
@@ -110,24 +142,6 @@ class PedidoController extends Controller
         }
     }
 
-    public function motivoAnularPedido(Request $request)
-    {
-        $this->validate($request, [
-            'pedido_id' => 'required',
-            'motivo_anulacion' => 'required',   
-            'fecha_anulacion' => 'required'
-        ]);
-        $user_id = auth()->id();
-        $pedido = Pedido::where('user_id',$user_id)
-                    ->where('id',$request->pedido_id)->update(['motivo_anulacion' => $request->motivo_anulacion,'fecha_anulacion' => $request->fecha_anulacion,'estado' => 'anulado']);
-        return response()
-        ->json([
-            'updated' => true,
-            'pedido'=> $pedido,
-            'type'=> 'anulado'
-        ]);
-    }
-
     public function destroy($id){
         try {
             $carrito = Carrito::where('pedido_id',$id)->delete();
@@ -139,8 +153,43 @@ class PedidoController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
         }
-        
     }
 
 
+    public function tusPedidoConfirmadosByUserId(){
+        $hasPermission = false;
+        $pedido='';
+        if(Acceso::hasPermission(Acceso::getListarPedidoCliente())){
+            $user_id = auth()->id();
+            $pedido = Pedido::with('direction')->with('carrito.product.file')->where('user_id',$user_id)->whereNotIn('estado', ['carrito'])->orderBy('updated_at', 'DESC')->paginate(5);
+            $hasPermission = true;
+        }
+        return response()
+        ->json([
+            'hasPermission' => $hasPermission,
+            'pedido'=> $pedido
+        ]);
+    }
+
+    public function motivoAnularPedido(Request $request)
+    {
+        $hasPermission = false;
+        $pedido='';
+        if(Acceso::hasPermission(Acceso::getAnularPedidoCliente())||Acceso::hasPermission(Acceso::getAnularPedidoAdmin())){
+            $this->validate($request, [
+                'pedido_id' => 'required',
+                'motivo_anulacion' => 'required',
+                'fecha_anulacion' => 'required'
+            ]);
+            // return $request;
+            $user_id = auth()->id();
+            $pedido = Pedido::where('id',$request->pedido_id)->update(['motivo_anulacion' => $request->motivo_anulacion,'fecha_anulacion' => $request->fecha_anulacion,'estado' => 'anulado']);
+            $hasPermission = true;
+        }
+        return response()
+        ->json([
+            'hasPermission' => $hasPermission,
+            'pedido'=> $pedido
+        ]);
+    }
 }
