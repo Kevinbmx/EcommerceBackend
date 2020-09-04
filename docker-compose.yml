@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  app:
+    build:
+      args:
+        user: kevin
+        uid: 1000
+      context: ./
+      dockerfile: prod.Dockerfile
+    container_name: ninostore-app
+    restart: unless-stopped
+    # environment:
+    #   DATABASE_CONNECTION: mysql
+    #   DATABASE_HOST: mysql
+    #   DATABASE_PORT: 3306
+    #   DATABASE_DATABASE: ninoStore_db
+    #   DATABASE_USER: root
+    #   DATABASE_PASSWORD: root
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+      - ./public:/var/www/html
+    networks:
+      - ninostore
+
+  nginx:
+    image: nginx:alpine
+    container_name: ninostore-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - ninostore
+
+networks:
+  ninostore:
+    name: network_laravel_net
+    driver: bridge
