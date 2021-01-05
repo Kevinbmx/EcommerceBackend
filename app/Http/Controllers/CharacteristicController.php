@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Model\characteristic;
+use App\Model\Characteristic;
 use Illuminate\Http\Request;
 
 class CharacteristicController extends Controller
@@ -10,7 +10,7 @@ class CharacteristicController extends Controller
     /**
      * Display a listing of the resource by productId.
      *
-     * 
+     *
      */
     public function getByProductId($productId)
     {
@@ -18,7 +18,7 @@ class CharacteristicController extends Controller
         return $characteristicByProductId;
     }
 
-  
+
 
 
     /**
@@ -40,16 +40,16 @@ class CharacteristicController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'product_id' => 'required',   
+            'product_id' => 'required',
             'characteristic' => 'required',
-            
+
         ]);
         $characteristic = Characteristic::create([
             'product_id' => $request->product_id,
             'characteristic' => $request->characteristic,
         ]);
         // $CharacteristicObj = Characteristic::find($characteristic->id);
-      
+
         return response()
             ->json([
                 'response' => 'success',
@@ -91,7 +91,7 @@ class CharacteristicController extends Controller
     public function update(Request $request,$id)
     {
         $this->validate($request, [
-            'product_id' => 'required',   
+            'product_id' => 'required',
             'characteristic' => 'required',
         ]);
         $characteristic = Characteristic::findOrFail($id);
@@ -127,5 +127,5 @@ class CharacteristicController extends Controller
     public function getpruebas(){
         return Characteristic::with('products')->get();
     }
-    
+
 }

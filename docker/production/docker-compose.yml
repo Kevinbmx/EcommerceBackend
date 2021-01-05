@@ -1,0 +1,76 @@
+version: "3.7"
+services:
+  nginx_proxy:
+    image: jwilder/nginx-proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /var/proyectos/ninotienda/letsencrypt/certs:/etc/nginx/certs:ro
+      - /etc/nginx/vhost.d
+      - /usr/share/nginx/html
+    labels:
+      - com.github.jrcs.letsencrypt_nginx_proxy_companion_proxy
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    restart: always
+    volumes:
+      - /var/proyectos/ninotienda/letsencrypt/certs:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    volumes_from:
+      - nginx_proxy:rw
+
+  ninotienda_nginx:
+    image: nginx:latest
+    restart: always
+    container_name: ninotienda_nginx
+    expose:
+      - "80"
+    volumes:
+            #      - /var/proyectos/ninotienda/vuejs/EcommerceFrontend/dist:/usr/share/nginx/html:ro
+      - /var/proyectos/ninotienda/vuejsnuevo/dist:/usr/share/nginx/html:ro
+      - /var/proyectos/ninotienda/vuejsnuevo/nginx:/etc/nginx/conf.d
+    environment:
+      - VIRTUAL_HOST=ninotienda.com, www.ninotienda.com
+      - LETSENCRYPT_HOST=ninotienda.com,www.ninotienda.com
+
+  ninoStore_mysql:
+    image: mysql:5.7
+    container_name: ninoStore_mysql
+    restart: always
+    environment:
+       MYSQL_ROOT_PASSWORD: root
+    ports:
+       - 3306:3306
+    volumes:
+       - /var/proyectos/ninotienda/mysql/schemas:/var/lib/mysql
+
+  app:
+    build:
+      args:
+        user: kevin
+        uid: 1000
+      context: ./
+      dockerfile: prod.Dockerfile
+    container_name: ninostore-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+       - ./:/var/www
+       - ./public:/var/www/html
+
+  nginx:
+    image: nginx:latest
+    container_name: ninostore-nginx
+    restart: unless-stopped
+    expose:
+       - "80"
+    volumes:
+       - ./:/var/www/
+       - ./docker/nginx:/etc/nginx/conf.d
+    environment:
+       - VIRTUAL_HOST=api.ninotienda.com, www.api.ninotienda.com
+       - LETSENCRYPT_HOST=api.ninotienda.com, www.api.ninotienda.com

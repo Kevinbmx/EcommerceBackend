@@ -21,7 +21,8 @@ class ModuleSeeder extends Seeder
             ['id'=>5,'name'=>'permiso','created_at' => $date,'updated_at'=> $date],
             ['id'=>6,'name'=>'acceso','created_at' => $date,'updated_at'=> $date],
             ['id'=>7,'name'=>'rol','created_at' => $date,'updated_at'=> $date],
-            ['id'=>8,'name'=>'pedido','created_at' => $date,'updated_at'=> $date]
+            ['id'=>8,'name'=>'pedido','created_at' => $date,'updated_at'=> $date],
+            ['id'=>9,'name'=>'pedido cliente','created_at' => $date,'updated_at'=> $date]
         ];
         DB::table('modules')->insert($modules);
 

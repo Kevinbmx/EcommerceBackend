@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Acceso;
 use Auth;
+use Carbon\Carbon;
+use DB;
+use App\Model\Product;
 
 class PedidoController extends Controller
 {
@@ -173,23 +176,64 @@ class PedidoController extends Controller
 
     public function motivoAnularPedido(Request $request)
     {
-        $hasPermission = false;
-        $pedido='';
-        if(Acceso::hasPermission(Acceso::getAnularPedidoCliente())||Acceso::hasPermission(Acceso::getAnularPedidoAdmin())){
-            $this->validate($request, [
-                'pedido_id' => 'required',
-                'motivo_anulacion' => 'required',
-                'fecha_anulacion' => 'required'
+        try{
+        // return $request;
+            $hasPermission = false;
+            $pedido='';
+            $fecha_anulacion=Carbon::now()->toDateTimeString();
+            if(Acceso::hasPermission(Acceso::getAnularPedidoCliente())||Acceso::hasPermission(Acceso::getAnularPedidoAdmin())){
+                $this->validate($request, [
+                    'pedido_id' => 'required',
+                    'motivo_anulacion' => 'required',
+                    'carrito' =>'required'
+                ]);
+                // return $request;
+                $user_id = auth()->id();
+                $pedido = Pedido::where('id',$request->pedido_id)->update(['motivo_anulacion' => $request->motivo_anulacion,'fecha_anulacion' => $fecha_anulacion,'estado' => 'anulado']);
+                if($this->updateProductAccoodingCancelPedido($request->carrito)){
+                    $hasPermission = true;
+                }else{
+                    $hasPermission = 'permiso denegado';
+                }
+                // return $this->updateProductAccoodingCancelPedido($request->carrito);
+            }
+            return response()
+            ->json([
+                'hasPermission' => $hasPermission,
+                'pedido'=> $pedido
             ]);
-            // return $request;
-            $user_id = auth()->id();
-            $pedido = Pedido::where('id',$request->pedido_id)->update(['motivo_anulacion' => $request->motivo_anulacion,'fecha_anulacion' => $request->fecha_anulacion,'estado' => 'anulado']);
-            $hasPermission = true;
+        } catch (QueryException $e) {
+            $errorCode = $e->errorInfo[1];
+            // return $errorCode;
+            if($errorCode == 1062){
+                return response()
+                ->json(['message'=>'duplicate',
+                        'pedido'=> []]);
+            }
         }
-        return response()
-        ->json([
-            'hasPermission' => $hasPermission,
-            'pedido'=> $pedido
-        ]);
     }
+     // este metodo lo llamare en pedido controller
+     public function updateProductAccoodingCancelPedido($carritoACancelar){
+         if(Acceso::hasPermission(Acceso::getActualizarProductoAcordingCancelPedido())){
+             $isupdated = false;
+             DB::beginTransaction();
+             try{
+                 foreach ($carritoACancelar as $carrito) {
+                    // return($carrito);
+                    $product = Product::findOrFail($carrito['product']['id']);
+                        $product['quantity'] += $carrito['quantity'];
+                        $product->update(['quantity' => $product['quantity']]);
+                }
+                $isupdated = true;
+            } catch (\Exception $e) {
+                // echo ' , entra';
+                DB::rollback();
+                return false;
+            }
+            DB::commit();
+            return $isupdated;
+        }
+        return 'permiso denegado' ;
+    }
+
 }

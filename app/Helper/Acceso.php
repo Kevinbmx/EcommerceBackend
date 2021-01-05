@@ -53,6 +53,7 @@ class Acceso
     //-----------------pedido cliente--------------------
      public static $listarPedidoCliente      =  'listar pedido cliente';
      public static $anularPedidoCliente      =  'anular pedido cliente';
+     public static $actualizarProductoAcordingCancelPedido = 'actualizar producto por cancelacion cliente';
     //-----------------------------------------------------------
     //-------------------main page------------------------------
 
@@ -199,6 +200,11 @@ class Acceso
     public static  function getAnularPedidoCliente ()
     {
         return (self::$anularPedidoCliente);
+    }
+
+    public static  function getactualizarProductoAcordingCancelPedido ()
+    {
+        return (self::$actualizarProductoAcordingCancelPedido);
     }
 
     public static  function hasPermission($permiso){
