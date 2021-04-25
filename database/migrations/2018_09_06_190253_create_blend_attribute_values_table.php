@@ -31,6 +31,10 @@ class CreateBlendAttributeValuesTable extends Migration
      */
     public function down()
     {
+        Schema::table('blend_attribute_values', function (Blueprint $table) {
+            $table->dropForeign('product_id');
+            $table->dropColumn('product_id');
+        });
         Schema::dropIfExists('blend_attribute_values');
     }
 }

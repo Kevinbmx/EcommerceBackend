@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\model\module;
+use App\Helper\Acceso;
+use App\Models\Module;
 use Illuminate\Http\Request;
-use Acceso;
+
 class ModuleController extends Controller
 {
-    /**
+  /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -40,7 +41,7 @@ class ModuleController extends Controller
         if(Acceso::hasPermission(Acceso::getCrearModulo())){
             $this->validate($request, [
                 'name' => 'required',
-            ]); 
+            ]);
 
             $module = new Module;
             $module->name = $request->name;
@@ -68,7 +69,7 @@ class ModuleController extends Controller
         if(Acceso::hasPermission(Acceso::getActualizarModulo())){
             $module = Module::find($id);
             $hasPermission = true;
-        } 
+        }
         return response()
         ->json([
             'hasPermission' => $hasPermission,
@@ -126,4 +127,5 @@ class ModuleController extends Controller
             'module'=> $module,
         ]);
     }
+
 }

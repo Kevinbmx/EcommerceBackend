@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Model\File;
+use App\Models\File;
 use Illuminate\Http\Request;
 
 class FileController extends Controller
@@ -10,7 +10,7 @@ class FileController extends Controller
     /**
      * Display a listing of the resource by product Id.
      *
-     * 
+     *
      */
     public function getByProductId($productId)
     {
@@ -39,16 +39,16 @@ class FileController extends Controller
     {
         $this->validate($request, [
             'name'=> 'required',
-            'product_id' => 'required',   
+            'product_id' => 'required',
             'path' => 'required',
-            
+
         ]);
         $file = File::create([
             'name'=>$request->name,
             'product_id' => $request->product_id,
             'path' => $request->path,
         ]);
-      
+
         return response()
             ->json([
                 'response' => 'success',
@@ -91,9 +91,9 @@ class FileController extends Controller
     {
         $this->validate($request, [
             'name'=> 'required',
-            'product_id' => 'required',   
+            'product_id' => 'required',
             'path' => 'required',
-            
+
         ]);
         $file = File::findOrFail($id);
         $file->update([
@@ -125,4 +125,5 @@ class FileController extends Controller
             'eliminado' => true,
         ]);
     }
+
 }

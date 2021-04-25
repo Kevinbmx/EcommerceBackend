@@ -2,20 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Model\Pedido;
-use App\Model\Carrito;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Acceso;
-use Auth;
 use Carbon\Carbon;
-use DB;
-use App\Model\Product;
+use App\Models\User;
+use App\Helper\Acceso;
+use App\Models\Pedido;
+use App\Models\Carrito;
+use App\Models\Product;
+use App\Mail\ConfirmedMail;
+use Illuminate\Http\Request;
+use App\Mail\CancelarPedidoMail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Database\QueryException;
 
 class PedidoController extends Controller
 {
-    //-------------solo main page---------------
-    public function pedidoByUserId(Request $request){
+      //-------------solo main page---------------
+      public function pedidoByUserId(Request $request){
         $pedido = null;
         $user = auth('api')->user();
         if(!is_null($user)){
@@ -31,12 +34,28 @@ class PedidoController extends Controller
     }
 
     public function pedidoById($id){
-        $pedido = Pedido::where('estado','=','carrito')
-                ->where('id',$id)
-                ->first();
+        $pedido = '';
+        $user = null;
+        if (auth('api')->user()) {
+            $user = auth('api')->user();
+            $pedido = Pedido::where('user_id', $user->id)->where('estado','=','carrito')
+                    ->where('id',$id)
+                    ->first();
+                    // return $pedido;
+            if($pedido != null){
+                return response()
+                ->json([
+                    'message'=>'selected',
+                    'pedido'=> $pedido
+                ]);
+            }
+        }
+        $pedido = Pedido::where('user_id', null)->where('estado','=','carrito')
+        ->where('id',$id)
+        ->first();
         return response()
         ->json([
-            'message'=>'selected',
+            'message'=>'selectedssss',
             'pedido'=> $pedido
         ]);
     }
@@ -118,23 +137,32 @@ class PedidoController extends Controller
         //     'direction_id' => 'required',
         // ]);
         // $user_id = auth()->id();
-        $user_id = $request->user('api')->id;
+        $user = $request->user('api');
         try {
             $pedido = Pedido::where('id',$id)->update([
-                    'estado' => $request->estado,
-                    'direction_id' => $request->direction_id,
-                    'fecha_entrega' => $request->fecha_entrega,
-                    'fecha_anulacion' => $request->fecha_anulacion,
-                    'motivo_anulacion' => $request->motivo_anulacion,
-                    'total' => $request->total,
-                    'user_id' => $user_id
-                    ]);
-                    return response()
-                ->json([
-                    'updated' => true,
-                    'pedido'=> $pedido,
-                    'type'=> 'update'
+                'estado' => $request->estado,
+                'direction_id' => $request->direction_id,
+                'fecha_entrega' => $request->fecha_entrega,
+                'fecha_anulacion' => $request->fecha_anulacion,
+                'motivo_anulacion' => $request->motivo_anulacion,
+                'total' => $request->total,
+                'user_id' => $user->id
                 ]);
+            if($request->estado === 'confirmado'){
+                $pedidoConfirmado = Pedido::with('direction')->with('carrito.product.file')->where('user_id',$user->id)->whereNotIn('estado', ['carrito'])->where('id',$id)->first();
+                // Mail::to('kevi3195@gmail.com')->send(new ConfirmedMailForAdmin($pedidoConfirmado));
+                // $emails = ['kevi3195@gmail.com'];
+                $email =env('EMAIL_NINO_TIENDA');
+                // array_push($emails, $user->email);
+                Mail::to($user->email)->bcc($email)->queue(new ConfirmedMail($pedidoConfirmado));
+                // Mail::to($email)->queue(new ConfirmedMail($pedidoConfirmado));
+            }
+            return response()
+            ->json([
+                'updated' => true,
+                'pedido'=> $pedido,
+                'type'=> 'update'
+            ]);
         } catch (\Throwable $th) {
             return response()
                 ->json([
@@ -177,25 +205,47 @@ class PedidoController extends Controller
     public function motivoAnularPedido(Request $request)
     {
         try{
-        // return $request;
             $hasPermission = false;
             $pedido='';
             $fecha_anulacion=Carbon::now()->toDateTimeString();
-            if(Acceso::hasPermission(Acceso::getAnularPedidoCliente())||Acceso::hasPermission(Acceso::getAnularPedidoAdmin())){
-                $this->validate($request, [
-                    'pedido_id' => 'required',
-                    'motivo_anulacion' => 'required',
-                    'carrito' =>'required'
-                ]);
-                // return $request;
-                $user_id = auth()->id();
-                $pedido = Pedido::where('id',$request->pedido_id)->update(['motivo_anulacion' => $request->motivo_anulacion,'fecha_anulacion' => $fecha_anulacion,'estado' => 'anulado']);
-                if($this->updateProductAccoodingCancelPedido($request->carrito)){
+            if(Acceso::hasPermission(Acceso::getAnularPedidoCliente()) || Acceso::hasPermission(Acceso::getAnularPedido())){
+                // return "entro";
+                try{
+                    DB::beginTransaction();
+                    // return $request;
+                    $this->validate($request, [
+                        'pedido_id' => 'required',
+                        'motivo_anulacion' => 'required',
+                        'carrito' =>'required'
+                    ]);
+                    // return $request;
+                    $pedido = Pedido::where('id',$request->pedido_id)->update(['motivo_anulacion' => $request->motivo_anulacion,'fecha_anulacion' => $fecha_anulacion,'estado' => 'anulado']);
+                    // return $pedido;
+                    $pedidoCancelado = Pedido::find($request->pedido_id);
+                    // return $pedidoById;
+                    $user = User::find($pedidoCancelado->user_id);
+                    // return $user;
+                }
+                catch (\Exception $e) {
+                    // echo ' , entra';
+                    DB::rollback();
+                    return false;
+                }
+                $updateproductacordingpedido = $this->updateProductAccoodingCancelPedido($request->carrito);
+                if($updateproductacordingpedido == true || $updateproductacordingpedido !== "permiso denegado"){
                     $hasPermission = true;
+                    $email =env('EMAIL_NINO_TIENDA');
+                    // return $pedidoCancelado->motivo_anulacion;
+                    Mail::to($user->email)->bcc($email)->queue(new CancelarPedidoMail($pedidoCancelado));
                 }else{
                     $hasPermission = 'permiso denegado';
+                    DB::rollback();
+                    return response()
+                    ->json([
+                        'hasPermission' => $hasPermission,
+                    ]);
                 }
-                // return $this->updateProductAccoodingCancelPedido($request->carrito);
+                DB::commit();
             }
             return response()
             ->json([
@@ -212,7 +262,6 @@ class PedidoController extends Controller
             }
         }
     }
-     // este metodo lo llamare en pedido controller
      public function updateProductAccoodingCancelPedido($carritoACancelar){
          if(Acceso::hasPermission(Acceso::getActualizarProductoAcordingCancelPedido())){
              $isupdated = false;
@@ -233,7 +282,19 @@ class PedidoController extends Controller
             DB::commit();
             return $isupdated;
         }
-        return 'permiso denegado' ;
+        return "permiso denegado";
     }
 
+    public function pedidoByIdAdmin($id){
+        $hasPermission = false;
+        if(Acceso::hasPermission(Acceso::getverDetallePedido())){
+            $pedido = Pedido::with('direction')->with('carrito.product.file')->where('id',$id)->first();
+            $hasPermission = true;
+        }
+        return response()
+        ->json([
+            'hasPermission' => $hasPermission,
+            'pedido'=> $pedido
+        ]);
+    }
 }

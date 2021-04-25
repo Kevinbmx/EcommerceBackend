@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Model\Characteristic;
 use Illuminate\Http\Request;
+use App\Models\Characteristic;
 
 class CharacteristicController extends Controller
 {
-    /**
+     /**
      * Display a listing of the resource by productId.
      *
      *
@@ -16,19 +16,6 @@ class CharacteristicController extends Controller
     {
         $characteristicByProductId = Characteristic::where('product_id',$productId)->get();
         return $characteristicByProductId;
-    }
-
-
-
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -57,28 +44,6 @@ class CharacteristicController extends Controller
                 'type'=> 'create',
                 'id'=>$characteristic->id,
             ]);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\characteristic  $characteristic
-     * @return \Illuminate\Http\Response
-     */
-    public function show(characteristic $characteristic)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\characteristic  $characteristic
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(characteristic $characteristic)
-    {
-        //
     }
 
     /**
@@ -127,5 +92,4 @@ class CharacteristicController extends Controller
     public function getpruebas(){
         return Characteristic::with('products')->get();
     }
-
 }

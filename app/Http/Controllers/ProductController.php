@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use DB;
+use App\Helper\Acceso;
+use App\Models\Product;
 use Illuminate\Http\Request;
-use App\Model\Product;
-use App\Model\Category;
-use Webpatser\Uuid\Uuid;
-use Illuminate\Support\Facades\Auth;
-use Acceso;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -50,7 +48,7 @@ class ProductController extends Controller
                 'ancho'=> 'required',
                 'fondo'=> 'required',
             ]);
-            $uuid = Uuid::generate(1);
+            $uuid = Str::uuid();
             $IdUser = auth()->id();
             $product = Product::create([
                 'name' => $request->name,
@@ -176,4 +174,5 @@ class ProductController extends Controller
 
         ]);
     }
+
 }

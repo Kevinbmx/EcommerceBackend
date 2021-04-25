@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Model\Direction;
+use App\Models\Direction;
 use Illuminate\Http\Request;
 
 class DirectionController extends Controller
 {
-
-public function getDirectionsByUserId(Request $request)
+    public function getDirectionsByUserId(Request $request)
 {
     $user = auth('api')->user();
     if(!is_null($user)){
@@ -31,7 +30,7 @@ public function getDirectionsByUserId(Request $request)
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required',   
+            'name' => 'required',
             'direction' => 'required',
             'latitud' => 'required',
             'longitud' => 'required',
@@ -75,4 +74,5 @@ public function getDirectionsByUserId(Request $request)
     {
         //
     }
+
 }

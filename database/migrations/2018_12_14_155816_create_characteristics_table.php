@@ -29,6 +29,10 @@ class CreateCharacteristicsTable extends Migration
      */
     public function down()
     {
+        Schema::table('characteristics', function (Blueprint $table) {
+            $table->dropForeign('product_id');
+            $table->dropColumn('product_id');
+        });
         Schema::dropIfExists('characteristics');
     }
 }

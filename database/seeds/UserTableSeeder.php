@@ -21,7 +21,7 @@ class UsersTableSeeder extends Seeder
         App\Model\User::create([
             'name'=>'kevin delgadillo',
             'email'=>'kevi3195@gmail.com',
-            'role_id'=>'3',
+            'role_id'=>'2',
             'password'=> bcrypt('secret')
         ]);
     //    Role::create([

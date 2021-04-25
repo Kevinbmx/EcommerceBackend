@@ -21,6 +21,10 @@ use Illuminate\Http\Request;
 //=====================para loguearse y registrarse======================
 Route::post('/login','AuthController@login');
 Route::post('/register','AuthController@register');
+Route::post('/forgot','AuthController@forgot');
+Route::post('/reset','AuthController@reset');
+
+Route::post('/pruebaEmail','AuthController@pruebaEnvioEmail');
 //=======================================================================
  //=============================== main page=========================================
     /**
@@ -74,8 +78,8 @@ Route::post('/register','AuthController@register');
 
 
 Route::middleware('auth:api')->group(function(){
-    Route::get('/user', 'UserController@index');
-    Route::post('/user', 'UserController@create');
+    Route::get('/user','UserController@index');
+    Route::post('/user','UserController@create');
     Route::post('/user/{id}','UserController@update');
 
     Route::post('/logout','AuthController@logout');
@@ -88,10 +92,11 @@ Route::middleware('auth:api')->group(function(){
         Route::get('/product/{id}','ProductController@getById');
         Route::post('/product','ProductController@store');
         Route::post('/product/{id}','ProductController@update');
-        Route::delete('/product/{category}', 'ProductController@destroy');
+        Route::delete('/product/{category}','ProductController@destroy');
     //==================================================================
 
     //==============================pedido==============================
+        Route::get('/pedidoByIdAdmin/{id}','PedidoController@pedidoByIdAdmin');
         Route::post('/pedidoSearch','PedidoController@pedidoSearch');
         Route::post('/pedido/{id}','PedidoController@update');
         Route::delete('/pedido/{id}','PedidoController@destroy');
@@ -107,8 +112,8 @@ Route::middleware('auth:api')->group(function(){
         Route::post('/category','CategoryController@store');
         // Route::post('/category/{category}','CategoryController@update');
         Route::post('/category/{id}','CategoryController@update');
-        Route::delete('/category/{category}', 'CategoryController@destroy');
-        Route::post('/addParent', 'CategoryController@addParent');
+        Route::delete('/category/{category}','CategoryController@destroy');
+        Route::post('/addParent','CategoryController@addParent');
         Route::get('/category/{category}','CategoryController@byId');
 
 

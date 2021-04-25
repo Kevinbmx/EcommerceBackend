@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\model\Role;
+use App\Models\Role;
+use App\Helper\Acceso;
 use Illuminate\Http\Request;
-use Acceso;
 
 class RoleController extends Controller
 {
@@ -20,14 +20,12 @@ class RoleController extends Controller
         if(Acceso::hasPermission(Acceso::getlistarRol())){
             $role = Role::paginate(10);
             $hasPermission = true;
-        } 
+        }
         return response()
         ->json([
             'hasPermission' => $hasPermission,
             'role'=> $role,
-            
         ]);
-
     }
 
     public function roleById($id)
@@ -42,10 +40,10 @@ class RoleController extends Controller
         ->json([
             'hasPermission' => $hasPermission,
             'role'=> $role,
-            
+
         ]);
     }
-    
+
     /**
      * Store a newly created resource in storage.
      *
@@ -60,8 +58,8 @@ class RoleController extends Controller
             $this->validate($request, [
                 'name' => 'required',
                 'description' => 'required',
-                
-            ]); 
+
+            ]);
 
             $role = new Role;
             $role->name = $request->name;
@@ -74,7 +72,7 @@ class RoleController extends Controller
         ->json([
             'hasPermission' => $hasPermission,
             'role'=> $role,
-            
+
         ]);
     }
 
@@ -122,4 +120,5 @@ class RoleController extends Controller
             'role'=> $role,
         ]);
     }
+
 }

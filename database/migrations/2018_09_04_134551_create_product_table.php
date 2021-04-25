@@ -39,6 +39,10 @@ class CreateProductTable extends Migration
      */
     public function down()
     {
+        Schema::table('product', function (Blueprint $table) {
+            $table->dropForeign('category_id');
+            $table->dropColumn('category_id');
+        });
         Schema::dropIfExists('product');
     }
 }

@@ -29,6 +29,10 @@ class CreateFilesTable extends Migration
      */
     public function down()
     {
+        Schema::table('files', function (Blueprint $table) {
+            $table->dropForeign('product_id');
+            $table->dropColumn('product_id');
+        });
         Schema::dropIfExists('files');
     }
 }

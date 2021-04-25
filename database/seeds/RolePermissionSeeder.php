@@ -51,6 +51,7 @@ class RolePermissionSeeder extends Seeder
         $permissions = [
             [30],
             [31],
+            [34],
         ];
         $rolePermission = App\Model\Role::find(2);
         foreach ($permissions as $permission) {

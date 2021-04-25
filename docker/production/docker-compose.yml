@@ -31,8 +31,8 @@ services:
       - "80"
     volumes:
             #      - /var/proyectos/ninotienda/vuejs/EcommerceFrontend/dist:/usr/share/nginx/html:ro
-      - /var/proyectos/ninotienda/vuejsnuevo/dist:/usr/share/nginx/html:ro
-      - /var/proyectos/ninotienda/vuejsnuevo/nginx:/etc/nginx/conf.d
+      - /var/proyectos/ninotienda/vuej/dist:/usr/share/nginx/html:ro
+      - /var/proyectos/ninotienda/vuej/nginx:/etc/nginx/conf.d
     environment:
       - VIRTUAL_HOST=ninotienda.com, www.ninotienda.com
       - LETSENCRYPT_HOST=ninotienda.com,www.ninotienda.com
@@ -42,11 +42,26 @@ services:
     container_name: ninoStore_mysql
     restart: always
     environment:
-       MYSQL_ROOT_PASSWORD: root
+       MYSQL_ROOT_PASSWORD: 6K3plVfnfPVCajvOPp8e
     ports:
        - 3306:3306
     volumes:
        - /var/proyectos/ninotienda/mysql/schemas:/var/lib/mysql
+
+  # phpmyadmin
+  phpmyadmin:
+    depends_on:
+      - ninoStore_mysql
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    expose:
+      - "80"
+    environment:
+      PMA_HOST: ninoStore_mysql
+      MYSQL_ROOT_PASSWORD: 6K3plVfnfPVCajvOPp8e
+    environment:
+      - VIRTUAL_HOST=database.ninotienda.com, www.database.ninotienda.com
+      - LETSENCRYPT_HOST=database.ninotienda.com,www.database.ninotienda.com
 
   app:
     build:

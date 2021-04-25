@@ -45,7 +45,8 @@ class PermissionSeeder extends Seeder
             ['id'=>30,'name'=> 'listar pedido cliente','module_id'=> 9 ,'created_at' => $date,'updated_at'=> $date ],
             ['id'=>31,'name'=> 'anular pedido cliente','module_id'=> 9 ,'created_at' => $date,'updated_at'=> $date ],
             ['id'=>32,'name'=> 'anular pedido admin'  ,'module_id'=> 8,'created_at' => $date,'updated_at'=> $date ],
-            ['id'=>33,'name'=> 'eliminar pedido'      ,'module_id'=> 8 ,'created_at' => $date,'updated_at'=> $date ]
+            ['id'=>33,'name'=> 'eliminar pedido'      ,'module_id'=> 8 ,'created_at' => $date,'updated_at'=> $date ],
+            ['id'=>34,'name'=> 'actualizar producto por cancelacion cliente','module_id'=> 9 ,'created_at' => $date,'updated_at'=> $date ]
         ];
         DB::table('permissions')->insert($permissions);
         // App\Model\Permission::create($permissions);

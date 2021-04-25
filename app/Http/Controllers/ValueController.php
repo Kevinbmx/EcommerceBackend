@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Value;
 use Illuminate\Http\Request;
-use App\Model\Value;
 
 class ValueController extends Controller
 {
-    /**
+     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -36,7 +36,7 @@ class ValueController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'value' => 'required',   
+            'value' => 'required',
         ]);
             // return $request;
         $value = Value::create([
@@ -93,4 +93,5 @@ class ValueController extends Controller
     {
         //
     }
+
 }
