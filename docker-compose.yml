@@ -6,8 +6,6 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: prueba2
-      MYSQL_PASSWORD: secret
     ports:
       - 3306:3306
     volumes:
@@ -28,32 +26,6 @@ services:
       - ninostore
     depends_on:
       - ninoStore_mysql
-
-  # nginx_phpmyadmin:
-  #   image: nginx:alpine
-  #   volumes:
-  #     - ./docker/nginxphpmyadmin/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-  #     - D:/kevin/docker/phpmyadmin:/var/www/html/:ro
-  #   ports:
-  #     - "9001:80"
-  #   networks:
-  #     - ninostore
-  #   depends_on:
-  #     - ninoStore_mysql
-  #     - phpmyadmin
-
-# # nginx paraphpmyadmin
-#   nginxphpmyadmin:
-#     image: nginx:alpine
-#     container_name: nginxphpmyadmin
-#     restart: unless-stopped
-#     ports:
-#       - 9000:8080
-#     volumes:
-#       - ./:/var/www/
-#       - ./docker/nginxphpmyadmin:/etc/nginx/conf.d
-#     networks:
-#       - ninostore
 
   app:
     build:
