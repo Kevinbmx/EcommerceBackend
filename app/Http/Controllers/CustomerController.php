@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Customer;
+use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
@@ -95,4 +95,5 @@ class CustomerController extends Controller
                 'deleted' => true
             ]);
     }
+
 }

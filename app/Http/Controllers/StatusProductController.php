@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Model\StatusProduct;
 use Illuminate\Http\Request;
+use App\Models\StatusProduct;
 
 class StatusProductController extends Controller
 {
-    /**
+     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -82,4 +82,5 @@ class StatusProductController extends Controller
     {
         //
     }
+
 }

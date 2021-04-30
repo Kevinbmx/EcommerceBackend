@@ -41,8 +41,19 @@ class RolePermissionSeeder extends Seeder
             [27],
             [28],
             [29],
+            [32],
+            [33],
         ];
         $rolePermission = App\Model\Role::find(1);
+        foreach ($permissions as $permission) {
+            $rolePermission->permissions()->attach($permission);
+        }
+        $permissions = [
+            [30],
+            [31],
+            [34],
+        ];
+        $rolePermission = App\Model\Role::find(2);
         foreach ($permissions as $permission) {
             $rolePermission->permissions()->attach($permission);
         }

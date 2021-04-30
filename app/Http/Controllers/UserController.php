@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
-use App\Model\User;
-
-
 
 class UserController extends Controller
 {
@@ -18,7 +16,7 @@ class UserController extends Controller
     //     $this->middleware('permission:user.show')->only('show');
     //     $this->middleware('permission:user.destroy')->only('destroy');
     // }
-  
+
     public function index()
     {
         // return response()
@@ -46,7 +44,7 @@ class UserController extends Controller
             'email' => 'required|email',
             'password' => 'required',
             'role_id' => 'required'
-        ]); 
+        ]);
 
         $users = new User;
         $users->name = $request->name;

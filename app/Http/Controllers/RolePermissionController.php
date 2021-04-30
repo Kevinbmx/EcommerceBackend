@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
+use App\Helper\Acceso;
+use App\Models\Module;
 use Illuminate\Http\Request;
-use App\model\Role;
-use App\model\Permission;
-use App\model\Module;
 use Illuminate\Support\Facades\DB;
-use Acceso;
 
 class RolePermissionController extends Controller
 {
-       /**
+      /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -173,4 +172,5 @@ class RolePermissionController extends Controller
             'rolePermission'=> $rolePermission,
         ]);
     }
+
 }

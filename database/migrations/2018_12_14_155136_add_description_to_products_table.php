@@ -30,6 +30,7 @@ class AddDescriptionToProductsTable extends Migration
         Schema::table('product', function (Blueprint $table) {
             $table->dropColumn('description');
             $table->dropForeign(['user_id']);
+            $table->dropColumn('user_id');
         });
     }
 }

@@ -33,6 +33,10 @@ class CreatePedidoTable extends Migration
      */
     public function down()
     {
+        Schema::table('pedido', function (Blueprint $table) {
+            $table->dropForeign('user_id');
+            $table->dropColumn('user_id');
+        });
         Schema::dropIfExists('pedido');
     }
 }

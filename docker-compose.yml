@@ -1,0 +1,59 @@
+version: "3.7"
+services:
+  ninoStore_mysql:
+    image: mysql:5.7
+    container_name: ninoStore_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+    volumes:
+      - D:/kevin/docker/mysql/schemas:/var/lib/mysql
+    networks:
+      - ninostore
+
+  # phpmyadmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - 9001:80
+    environment:
+      PMA_HOST: ninoStore_mysql
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - ninostore
+    depends_on:
+      - ninoStore_mysql
+
+  app:
+    build:
+      args:
+        user: kevin
+        uid: 1000
+      context: ./
+      dockerfile: prod.Dockerfile
+    image: ninostore-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    networks:
+      - ninostore
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - 8090:80
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d/
+    networks:
+      - ninostore
+
+networks:
+  ninostore:
+    name: network_laravel_net
+    driver: bridge

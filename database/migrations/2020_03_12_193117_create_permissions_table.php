@@ -29,6 +29,10 @@ class CreatePermissionsTable extends Migration
      */
     public function down()
     {
+        Schema::table('permissions', function (Blueprint $table) {
+            $table->dropForeign('module_id');
+            $table->dropColumn('module_id');
+        });
         Schema::dropIfExists('permissions');
     }
 }

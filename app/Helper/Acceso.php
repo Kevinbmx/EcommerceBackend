@@ -36,7 +36,7 @@ class Acceso
 
     //-----------------permisos--------------------
     public static $crearPermiso       =  'crear permiso';
-    public static $listarCantidadPermisoPorModulo      =  'listar cantidad de permiso por modulo';
+    public static $listarCantidadPermisoPorModulo      =  'listar cantidad de permiso';
     public static $listarPermiso      =  'listar permiso';
     public static $actualizarPermiso  =  'actualizar permiso';
     public static $eliminarPermiso    =  'eliminar permiso';
@@ -48,11 +48,14 @@ class Acceso
     public static $eliminarRol    =  'eliminar rol';
     //-----------------pedido--------------------
     public static $listarPedido      =  'listar pedido';
-    public static $anularPedidoAdmin      =  'anular pedido admin';
+    public static $anularPedido      =  'anular pedido admin';
+    // public static $eliminarPedido    =  'eliminar pedido';
+    public static $verDetallePedido    =  'ver detalle pedido';
     //-------------------------------------------------------
     //-----------------pedido cliente--------------------
      public static $listarPedidoCliente      =  'listar pedido cliente';
      public static $anularPedidoCliente      =  'anular pedido cliente';
+     public static $actualizarProductoAcordingCancelPedido = 'actualizar producto por cancelacion cliente';
     //-----------------------------------------------------------
     //-------------------main page------------------------------
 
@@ -185,10 +188,19 @@ class Acceso
     {
         return (self::$listarPedido);
     }
-    public static  function getAnularPedidoAdmin ()
+    public static  function getanularPedido ()
     {
-        return (self::$anularPedidoAdmin);
+        return (self::$anularPedido);
     }
+    // public static  function geteliminarPedido ()
+    // {
+    //     return (self::$eliminarPedido);
+    // }
+    public static  function getverDetallePedido ()
+    {
+        return (self::$verDetallePedido);
+    }
+
 
     //------------------pedido cliente---------------------
     public static  function getListarPedidoCliente ()
@@ -199,6 +211,11 @@ class Acceso
     public static  function getAnularPedidoCliente ()
     {
         return (self::$anularPedidoCliente);
+    }
+
+    public static  function getactualizarProductoAcordingCancelPedido ()
+    {
+        return (self::$actualizarProductoAcordingCancelPedido);
     }
 
     public static  function hasPermission($permiso){

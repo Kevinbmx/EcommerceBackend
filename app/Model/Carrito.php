@@ -3,7 +3,7 @@
 namespace App\model;
 
 use Illuminate\Database\Eloquent\Model;
-use App\model\Product;
+use App\Model\Product;
 
 class Carrito extends Model
 {

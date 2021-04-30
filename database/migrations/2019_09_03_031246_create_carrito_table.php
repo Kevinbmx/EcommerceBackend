@@ -33,6 +33,12 @@ class CreateCarritoTable extends Migration
      */
     public function down()
     {
+        Schema::table('carrito', function (Blueprint $table) {
+            $table->dropForeign('product_id');
+            $table->dropForeign('pedido_id');
+            $table->dropColumn('product_id');
+            $table->dropColumn('pedido_id');
+        });
         Schema::dropIfExists('carrito');
     }
 }

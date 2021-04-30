@@ -5,7 +5,7 @@ namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 use App\Support\FilterPaginateOrder;
 use App\model\Category;
-use App\model\characteristic;
+use App\model\Characteristic;
 
 
 class Product extends Model
@@ -27,9 +27,9 @@ class Product extends Model
     public function file(){
         return $this->hasMany(File::class,'product_id');
     }
-    
+
     public function characteristic(){
-        return $this->hasMany(characteristic::class,'product_id');
+        return $this->hasMany(Characteristic::class,'product_id');
     }
 
     public function categories()

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\Acceso;
+use App\Models\Category;
 use Illuminate\Http\Request;
-use App\Model\Category;
-use Acceso;
+use App\Http\Controllers\CategoryController;
 
 class CategoryController extends Controller
 {
@@ -21,7 +22,6 @@ class CategoryController extends Controller
         ->json([
             'hasPermission' => $hasPermission,
             'CategoryTree'=> $CategoryTree,
-
         ]);
     }
 
@@ -166,10 +166,11 @@ class CategoryController extends Controller
     }
 
     public function getchildCategory(){
-        return Category::with('children')->where('parent_id',0)->orderBy('name', 'asc')->get();
+        return Category::with('children')->where('parent_id',0)->where('enable', 1)->orderBy('name', 'asc')->get();
     }
 
     // public function getpruebas(){
     //     return Category::with('products')->get();
     // }
+
 }

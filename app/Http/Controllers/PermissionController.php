@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\model\Permission;
-use App\model\Module;
+use App\Helper\Acceso;
+use App\Models\Module;
+use App\Models\Permission;
 use Illuminate\Http\Request;
-use Acceso;
 
 class PermissionController extends Controller
 {
-    /**
+     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -26,7 +26,7 @@ class PermissionController extends Controller
         ->json([
             'hasPermission' => $hasPermission,
             'moduleWithPermission'=> $moduleWithPermission,
-            
+
         ]);
     }
     public function permissionById($id)
@@ -41,7 +41,7 @@ class PermissionController extends Controller
         ->json([
             'hasPermission' => $hasPermission,
             'permission'=> $permission,
-            
+
         ]);
     }
     //esta funcion es para llamar como una api en el front end para saber si tiene o no tiene permiso
@@ -49,14 +49,14 @@ class PermissionController extends Controller
     {
         $this->validate($request, [
             'namePermission' => 'required',
-        ]); 
+        ]);
         $hasPermission = Acceso::hasPermission($request->namePermission);
         return response()
         ->json([
-            'hasPermission' =>  $hasPermission 
+            'hasPermission' =>  $hasPermission
         ]);
     }
-    
+
 
     public function ver($idModule)
     {
@@ -70,7 +70,7 @@ class PermissionController extends Controller
         ->json([
             'hasPermission' => $hasPermission,
             'permission'=> $permission,
-            
+
         ]);
     }
 
@@ -89,8 +89,8 @@ class PermissionController extends Controller
             $this->validate($request, [
                 'name' => 'required',
                 'module_id' => 'required',
-                
-            ]); 
+
+            ]);
 
             $permission = new Permission;
             $permission->name = $request->name;
@@ -130,14 +130,14 @@ class PermissionController extends Controller
                     ]);
                     $hasPermission = true;
                     $save = true;
-               
+
             }   catch (\Illuminate\Database\QueryException $e) {
                 $errorCode = $e->errorInfo[1];
                 if($errorCode == 1062){
                     return response()
                     ->json([
                         'message'=>'duplicate',
-                        'save'=>$save 
+                        'save'=>$save
                     ]);
                 }
             }
@@ -146,7 +146,7 @@ class PermissionController extends Controller
         ->json([
             'hasPermission' => $hasPermission,
             'permission'=> $permission,
-            'save'=>$save 
+            'save'=>$save
         ]);
     }
 
@@ -171,4 +171,5 @@ class PermissionController extends Controller
             'permission'=> $permission,
         ]);
     }
+
 }
