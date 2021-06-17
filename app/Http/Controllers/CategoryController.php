@@ -39,6 +39,7 @@ class CategoryController extends Controller
                 'parent_id' => 'required',
                 'path'=>'required'
             ]);
+            // return $request;
             $category = Category::create([
                 'name' => $request->name,
                 'parent_id' => $request->parent_id,

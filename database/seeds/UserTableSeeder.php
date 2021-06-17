@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Caffeinated\Shinobi\Models\Role;
+use App\Models\User;
 class UsersTableSeeder extends Seeder
 {
     /**
@@ -12,13 +13,13 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
     //    factory(App\Models\User::class,20)->create();
-        App\Model\User::create([
+        User::create([
             'name'=>'admin',
             'email'=>'admin@admin.com',
             'role_id'=>'1',
             'password'=> bcrypt('secret')
         ]);
-        App\Model\User::create([
+        User::create([
             'name'=>'kevin delgadillo',
             'email'=>'kevi3195@gmail.com',
             'role_id'=>'2',
@@ -29,7 +30,7 @@ class UsersTableSeeder extends Seeder
     //         'slug' => 'admin',
     //         'special'=> 'all-access'
     //    ]);
-//        App\Model\Role_User::create([
+//        App\Models\Role_User::create([
 //         'role_id' => '1',
 //         'user_id' => '1',
 //    ]);

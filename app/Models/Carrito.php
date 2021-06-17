@@ -12,7 +12,7 @@ class Carrito extends Model
     use HasFactory;
     protected $table = 'carrito';
 
-    protected $fillable = ['product_id', 'pedido_id','price','quantity'];
+    protected $fillable = ['product_id', 'pedido_id','price','quantity','unidad_medida'];
 
     protected $hidden = ['created_at', 'updated_at'];
 

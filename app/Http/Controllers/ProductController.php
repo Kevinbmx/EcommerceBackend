@@ -15,7 +15,7 @@ class ProductController extends Controller
         $hasPermission = false;
         $productWithUser='';
         if(Acceso::hasPermission(Acceso::getlistarProducto())){
-            $productWithUser = Product::with('users')->get();
+            $productWithUser = Product::orderBy('created_at','desc')->get();
             $hasPermission = true;
         }
         return response()
@@ -26,12 +26,6 @@ class ProductController extends Controller
         ]);
         // ----------------------------------------------
     }
-    //---------------para el main page (no tinee que tener permiso)-----------------------
-    public function getRandomProduct(){
-        $product=Product::with('file')->get()->random(6);
-        return $product;
-    }
-    //-------------------------------------------------------------
 
     public function store(Request $request)
     {
@@ -39,7 +33,7 @@ class ProductController extends Controller
             $this->validate($request, [
                 'name' => 'required',
                 'modelo' => 'required',
-                'quantity' => 'required|Integer|min:0',
+                'quantity' => 'required|numeric|min:0',
                 'brand' => 'required',
                 'price' => 'required|numeric',
                 'category_id' =>'required',
@@ -66,11 +60,14 @@ class ProductController extends Controller
                 'uniqueCode'=>$uuid,
                 'statusProduct_id'=>$request->statusProduct_id,
                 'user_id'=> $IdUser,
-                'description'=>$request->description
+                'description'=>$request->description,
+                'unidad_medida' => $request->unidad_medida,
+                'enable_kg_per_price' =>$request->enable_kg_per_price,
+                'enable' => $request->enable
             ]);
             return response()
                 ->json([
-                    'create'=>true,
+                    'saved'=>true,
                     'product_id'=> $product->id,
                     'type'=> 'create'
                 ]);
@@ -124,7 +121,7 @@ class ProductController extends Controller
             $this->validate($request, [
                 'name' => 'required',
                 'modelo' => 'required',
-                'quantity' => 'required|Integer|min:0',
+                'quantity' => 'required|numeric|min:0',
                 'brand' => 'required',
                 'price' => 'required|numeric',
                 'category_id' =>'required',
@@ -134,7 +131,7 @@ class ProductController extends Controller
                 'fondo'=> 'required',
             ]);
             $product = Product::findOrFail($idProduct);
-            // return $request;
+            // return $product;
             $product->update([
                 'name' => $request->name,
                 'modelo' => $request->modelo,
@@ -148,12 +145,46 @@ class ProductController extends Controller
                 'fondo'=> $request->fondo,
                 'parent_id'=> $request->parent_id,
                 'statusProduct_id'=>$request->statusProduct_id,
-                'description'=>$request->description
+                'description'=>$request->description,
+                'unidad_medida' => $request->unidad_medida,
+                'enable_kg_per_price' =>$request->enable_kg_per_price,
+                'enable' => $request->enable
             ]);
+            // return $product;
             return response()
             ->json([
                 'saved' => true,
                 'product_id'=> $idProduct,
+                'type'=> 'update'
+            ]);
+        }
+    }
+    public function habilitar(Request $request,$idProduct)
+    {
+        try {
+            $product = '';
+            if(Acceso::hasPermission(Acceso::getActualizarProducto())){
+                $this->validate($request, [
+                    'enable'=> 'required',
+                ]);
+                    $product = Product::findOrFail($idProduct);
+                    // return $product;
+                    $product->update([
+                        'enable' => (bool) $request->enable
+                    ]);
+                    // return $product;
+                    return response()
+                    ->json([
+                        'saved' => true,
+                        'product'=> $product,
+                        'type'=> 'update'
+                    ]);
+            }
+        } catch (\Throwable $th) {
+            return response()
+            ->json([
+                'saved' => false,
+                'product'=> $product,
                 'type'=> 'update'
             ]);
         }

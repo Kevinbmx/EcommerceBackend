@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Models\StatusProduct;
 
 class statusProductTableSeeder extends Seeder
 {
@@ -11,19 +12,19 @@ class statusProductTableSeeder extends Seeder
      */
     public function run()
     {
-        App\Model\StatusProduct::create([
+        StatusProduct::create([
             'statusName'=>'Nuevo',
         ]);
-        App\Model\StatusProduct::create([
+        StatusProduct::create([
             'statusName'=>'2da Mano - Casi Nuevo',
         ]);
-        App\Model\StatusProduct::create([
+        StatusProduct::create([
             'statusName'=>'2da Mano - Muy Bueno',
         ]);
-        App\Model\StatusProduct::create([
+        StatusProduct::create([
             'statusName'=>'2da Mano - Bueno',
         ]);
-        App\Model\StatusProduct::create([
+        StatusProduct::create([
             'statusName'=>'bien',
         ]);
     }

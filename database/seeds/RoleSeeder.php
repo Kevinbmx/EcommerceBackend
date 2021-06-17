@@ -18,6 +18,6 @@ class RoleSeeder extends Seeder
             ['id' => 3, 'name'=>'visitor','description'=> 'solo puede ver todo la administracion','created_at' => $date,'updated_at'=> $date]
         ];
         DB::table('roles')->insert($rols);
-        // App\Model\Role::create($rols);
+        // App\Models\Role::create($rols);
     }
 }

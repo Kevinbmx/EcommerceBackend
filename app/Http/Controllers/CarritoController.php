@@ -59,11 +59,12 @@ class CarritoController extends Controller
             'product_id' => 'required',
             'quantity' => 'required',
             'price' => 'required',
-            'pedido_id' => 'required'
+            'pedido_id' => 'required',
+            'unidad_medida' => 'required'
         ]);
         try {
             $carrito = Carrito::updateOrCreate(['product_id' => $request->product_id,'pedido_id' => $request->pedido_id] ,
-            ['price' => $request->price,'quantity' => $request->quantity]);
+            ['price' => $request->price,'quantity' => $request->quantity,'unidad_medida'=>$request->unidad_medida]);
             $selectAllCarrito = $this->carritoByPedidoId($carrito->pedido_id);
             // dd($selectAllCarrito->getData()->carrito);
             // return $carrito;

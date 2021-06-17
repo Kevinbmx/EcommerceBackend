@@ -16,10 +16,14 @@ class Product extends Model
     use FilterPaginateOrder;
     protected $table = 'product';
     protected $fillable = [
-        'name', 'modelo', 'quantity', 'brand', 'price','category_id', 'peso','alto','ancho','fondo','parent_id','uniqueCode','statusProduct_id','user_id','description'
+        'name', 'modelo', 'quantity', 'brand', 'price','category_id',
+         'peso','alto','ancho','fondo','parent_id','uniqueCode','statusProduct_id',
+         'user_id','description','unidad_medida','enable_kg_per_price','enable'
     ];
     protected $filter = [
-        'id', 'name', 'modelo', 'quantity', 'brand', 'price','category_id', 'peso','alto','ancho','fondo','parent_id','uniqueCode','statusProduct_id','created_at'
+        'id', 'name', 'modelo', 'quantity', 'brand', 'price','category_id',
+        'peso','alto','ancho','fondo','parent_id','uniqueCode','statusProduct_id','created_at',
+        'unidad_medida','enable_kg_per_price','enable'
     ];
 
     protected $casts = [

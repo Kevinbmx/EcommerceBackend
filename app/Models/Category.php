@@ -17,7 +17,15 @@ class Category extends Model
     protected $hidden = ['display_order','created_at', 'updated_at'];
 
     public function parent() {
-        return $this->hasOne(Category::class, 'id', 'parent_id')->orderBy('name');
+        return $this->hasOne(Category::class, 'id', 'parent_id')->orderBy('name')->with('parent')->with('products');
+        // return $this->belongsTo('App\Models\Category', 'parent_id')->with('parent');
+    }
+    public function onlyParent() {
+        return $this->hasOne(Category::class, 'id', 'parent_id')->orderBy('name')->with('childrenWithProducts');
+    }
+
+    public function childrenWithProducts(){
+        return $this->hasMany(Category::class, 'parent_id', 'id')->with('products')->orderBy('name');
     }
 
     public function children() {
@@ -39,8 +47,7 @@ class Category extends Model
     // public function products(){
     //     return $this->hasMany(Product');
     // }
-
     public function products(){
-        return $this->hasMany(Product::class,'category_id');
+        return $this->hasMany(Product::class,'category_id')->with('file')->where('enable',1);
     }
 }

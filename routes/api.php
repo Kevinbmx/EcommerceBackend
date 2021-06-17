@@ -23,15 +23,20 @@ Route::post('/login','AuthController@login');
 Route::post('/register','AuthController@register');
 Route::post('/forgot','AuthController@forgot');
 Route::post('/reset','AuthController@reset');
-
+// ===========================================================================
+// =======================pruebas======================================
 Route::post('/pruebaEmail','AuthController@pruebaEnvioEmail');
+
 //=======================================================================
- //=============================== main page=========================================
-    /**
-     * page product Detail
-     */
-    Route::get('/fileOfProduct/{productId}','ProductDetailController@getFileOfProduct');
-    Route::get('/productDetail/{productId}','ProductDetailController@getProductDetail');
+//=============================== main page=========================================
+/**
+ * page product Detail
+ */
+Route::get('/fileOfProduct/{productId}','ProductDetailController@getFileOfProduct');
+Route::get('/productDetail/{productId}','ProductDetailController@getProductDetail');
+Route::get('/relatedProduct/{id}/{max}','ProductDetailController@getRelatedProduct');
+Route::get('/productRandomUrl/{random}','ProductDetailController@getRandomProduct');
+
     // Route::get('/getRelatedProductbyCategoryId/{id}','ProductDetailController@getRelatedProductbyCategoryId');
 //==================================================================================
 
@@ -66,7 +71,7 @@ Route::post('/pruebaEmail','AuthController@pruebaEnvioEmail');
 
 
     //===================================ruta producto========================================
-    Route::get('/productRandom','ProductController@getRandomProduct');
+
 
     //=====================================pedido===============================================
     Route::get('/pedidoByUserId','PedidoController@pedidoByUserId');
@@ -93,6 +98,7 @@ Route::middleware('auth:api')->group(function(){
         Route::post('/product','ProductController@store');
         Route::post('/product/{id}','ProductController@update');
         Route::delete('/product/{category}','ProductController@destroy');
+        Route::post('/habilitarProducto/{idProduct}','ProductController@habilitar');
     //==================================================================
 
     //==============================pedido==============================

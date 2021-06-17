@@ -49,6 +49,6 @@ class PermissionSeeder extends Seeder
             ['id'=>34,'name'=> 'actualizar producto por cancelacion cliente','module_id'=> 9 ,'created_at' => $date,'updated_at'=> $date ]
         ];
         DB::table('permissions')->insert($permissions);
-        // App\Model\Permission::create($permissions);
+        // App\Models\Permission::create($permissions);
     }
 }

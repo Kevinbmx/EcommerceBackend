@@ -26,6 +26,6 @@ class ModuleSeeder extends Seeder
         ];
         DB::table('modules')->insert($modules);
 
-        // App\Model\Module::create($modules);
+        // App\Models\Module::create($modules);
     }
 }

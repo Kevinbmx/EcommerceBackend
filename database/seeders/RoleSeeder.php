@@ -18,7 +18,8 @@ class RoleSeeder extends Seeder
         $rols = [
             ['id' => 1, 'name'=> 'admin','description'=> 'administra todo el sistema completo','created_at' => $date,'updated_at'=> $date ],
             ['id' => 2, 'name'=>'cliente','description'=> 'agregar items a carrito y hace pedidos','created_at' => $date,'updated_at'=> $date ],
-            ['id' => 3, 'name'=>'visitor','description'=> 'solo puede ver todo la administracion','created_at' => $date,'updated_at'=> $date]
+            ['id' => 3, 'name'=>'visitor','description'=> 'solo puede ver todo la administracion','created_at' => $date,'updated_at'=> $date],
+            ['id' => 4, 'name'=>'vendedor-cliente','description'=> 'podrá añadir y comprar sus productos.','created_at' => $date,'updated_at'=> $date]
         ];
         DB::table('roles')->insert($rols);
     }

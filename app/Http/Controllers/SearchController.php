@@ -17,7 +17,7 @@ class SearchController extends Controller
        return Category::with('children')->where('parent_id',$id)->where('enable',1)->orderBy('name', 'asc')->get();
    }
 
-//--------------este metodo getAllChildrenCategoryById va ligado a getRelatedProductbyCategoryId----------------
+   //--------------este metodo getAllChildrenCategoryById va ligado a getRelatedProductbyCategoryId----------------
 /**
 * me obtiene los hijos de la categoria deseada y lo vuelve en una lista
 */
@@ -47,7 +47,7 @@ class SearchController extends Controller
      array_unshift($allCategoryById,$ParentCategory);
    }
    foreach ($allCategoryById as $row) {
-     $productsByCategoryId =  Product::where('category_id',$row->id)->with('file')->get();
+     $productsByCategoryId =  Product::where('category_id',$row->id)->where('enable',true)->with('file')->get();
      if(collect($productsByCategoryId)->isNotEmpty()){
        foreach ($productsByCategoryId as $key => $products) {
          $allProductByCategories->push($products);
@@ -60,28 +60,33 @@ class SearchController extends Controller
    $currentPageResults = collect($allProductByCategories)->splice(($currentPage-1) * $per_page, $per_page)->all();
    $units = new LengthAwarePaginator($currentPageResults, count($allProductByCategories), $per_page);
    return $units;
-
  }
 //---------------------------------------------------------------------------------
  public function searchProduct($search){
    $product = Product::with('file')
             ->leftJoin('category as ca','ca.id','product.category_id')
-            ->orWhere('product.name','like',"%$search%")
-            ->orWhere('product.modelo','like',"%$search%")
-            ->orWhere('product.brand','like',"%$search%")
-            ->orWhere('product.description','like',"%$search%")
-            ->orWhere('product.uniqueCode','like',"%$search%")
-            ->orWhere('ca.name','like',"%$search%")
+            ->where('product.enable',true)
+            ->Where(function ($query)  use ($search) {
+                $query->orWhere('product.name','like',"%$search%")
+                ->orWhere('product.modelo','like',"%$search%")
+                ->orWhere('product.brand','like',"%$search%")
+                ->orWhere('product.description','like',"%$search%")
+                ->orWhere('product.uniqueCode','like',"%$search%")
+                ->orWhere('ca.name','like',"%$search%");
+            })
             // ->distinct()
             // ->paginate(12)
             ->select(['product.*'])->paginate(18);
    $category = Category::RightJoin('product','product.category_id','category.id')
-            ->orWhere('product.name','like',"%$search%")
-            ->orWhere('product.modelo','like',"%$search%")
-            ->orWhere('product.brand','like',"%$search%")
-            ->orWhere('product.description','like',"%$search%")
-            ->orWhere('product.uniqueCode','like',"%$search%")
-            ->orWhere('category.name','like',"%$search%")
+            ->where('product.enable',true)
+            ->Where(function ($query) use ($search) {
+                $query->orWhere('product.name','like',"%$search%")
+                ->orWhere('product.modelo','like',"%$search%")
+                ->orWhere('product.brand','like',"%$search%")
+                ->orWhere('product.description','like',"%$search%")
+                ->orWhere('product.uniqueCode','like',"%$search%")
+                ->orWhere('category.name','like',"%$search%");
+            })
             ->distinct()
             ->get(['category.*']);
    // $category = Product::leftJoin('category as ca','ca.id','product.category_id')

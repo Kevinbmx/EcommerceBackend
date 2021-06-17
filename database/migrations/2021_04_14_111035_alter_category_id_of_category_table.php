@@ -15,33 +15,33 @@ class AlterCategoryIdOfCategoryTable extends Migration
     {
         Schema::table('product', function (Blueprint $table) {
             $table->dropForeign(['category_id']);
-            $table->foreign('category_id')->references('id')->on('category')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('category_id')->references('id')->on('category')->onUpdate('cascade');
             $table->dropForeign(['statusProduct_id']);
-            $table->foreign('statusProduct_id')->references('id')->on('product')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('statusProduct_id')->references('id')->on('product')->onUpdate('cascade');
             $table->dropForeign(['user_id']);
-            $table->foreign('user_id')->references('id')->on('product')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('product')->onUpdate('cascade');
         });
         Schema::table('carrito', function (Blueprint $table) {
             $table->dropForeign(['product_id']);
-            $table->foreign('product_id')->references('id')->on('product')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('product')->onUpdate('cascade');
         });
         Schema::table('characteristics', function (Blueprint $table) {
             $table->dropForeign(['product_id']);
-            $table->foreign('product_id')->references('id')->on('product')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('product')->onUpdate('cascade');
         });
         Schema::table('files', function (Blueprint $table) {
             $table->dropForeign(['product_id']);
-            $table->foreign('product_id')->references('id')->on('product')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('product')->onUpdate('cascade');
         });
         Schema::table('role_permissions', function (Blueprint $table) {
             $table->dropForeign(['role_id']);
-            $table->foreign('role_id')->references('id')->on('roles')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('role_id')->references('id')->on('roles')->onUpdate('cascade');
             $table->dropForeign(['permission_id']);
-            $table->foreign('permission_id')->references('id')->on('permissions')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('permission_id')->references('id')->on('permissions')->onUpdate('cascade');
         });
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['role_id']);
-            $table->foreign('role_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('role_id')->references('id')->on('users')->onUpdate('cascade');
         });
 
 

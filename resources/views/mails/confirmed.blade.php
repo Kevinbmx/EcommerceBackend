@@ -119,16 +119,21 @@
             <div>
                 @foreach ($pedidoConfirmado->carrito as $carts )
                 <div  class="flexible product" style=" padding: 10px;">
-                    <div style="width: 27%; text-align: center;">
-                    <img src="{{ $message->embed($carts->product->file[0]->path) }}">
-                     </div>
-                    <div style="width: 57%; padding: 0 5px;"><label>{{$carts->product['name']}}</label><br><span class="redondear-candidad">{{$carts->quantity}}</span></div>
-                    <div style="width: 16%; color: rgb(217, 0, 0) !important;"><label>{{$carts->product['price']}} Bs.</label></div>
+                    <div style="width: 57%; padding: 0 5px;">
+                    <label>{{$carts->product['name']}}</label>
+                    @if($carts->product['unidad_medida'] == "kg" && $carts->product['enable_kg_per_price'] ==true)
+                    <br><span class="redondear-candidad">{{$carts->quantity}} Kg</span>
+                    @else
+                    <br><span class="redondear-candidad">{{$carts->quantity}}</span>
+                    @endif
+                </div>
+                    <div style="width: 21.5%; color: rgb(217, 0, 0) !important;"><label>{{$carts->product['price']}} Bs.</label></div>
+                    <div style="width: 21.5%; color: rgb(217, 0, 0) !important;"><label>{{($carts->product['price'] * $carts->quantity)}} Bs.</label></div>
                 </div>
                 @endforeach
                 <div  class="flexible product" style=" padding: 10px;">
-                    <div style="width: 84%; padding: 0 5px;"><label>Envio dentro del 1er y 2do anillo de Montero</label><br><span class="redondear-candidad">{{$carts->quantity}}</span></div>
-                    <div style="width: 16%; color: rgb(217, 0, 0) !important;"><label>10 Bs.</label></div>
+                    <div style="width: 57%; padding: 0 5px;"><label>Envio dentro del 1er y 2do anillo de Montero</label></div>
+                    <div style="width: 21.5%; color: rgb(217, 0, 0) !important;"><label>10 Bs.</label></div>
                 </div>
             </div>
             <h5>Esperamos volver a verte pronto.<h5>
