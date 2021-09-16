@@ -80,6 +80,9 @@ Route::get('/productRandomUrl/{random}','ProductDetailController@getRandomProduc
 
     // ============================ruta de direcciones de envio ====================================
     Route::get('/direction','DirectionController@getDirectionsByUserId');
+    //===========================================================================================
+    ///=======================carrusel==============================================================
+    Route::get('/getCarruselHabilitado','CarruselController@getCarruselHabilitado');
 
 
 Route::middleware('auth:api')->group(function(){
@@ -200,5 +203,13 @@ Route::middleware('auth:api')->group(function(){
         Route::get('/rolepermission/module','RolePermissionController@getAllModule');
     //=======================================================================
     //========================================================================
+    //=======================carrusel=========================================
+        Route::get('/carrusel','CarruselController@index');
+        Route::post('/carrusel','CarruselController@store');
+        Route::post('/carrusel/{id}','CarruselController@update');
+        Route::get('/carrusel/{id}','CarruselController@getById');
+        Route::delete('/carrusel/{id}','CarruselController@destroy');
+        Route::post('/habilitarCarrusel/{id}','CarruselController@habilitar');
+        //=======================================================================
         Route::get('/getUserByToken','UserController@getUserByToken');
 });

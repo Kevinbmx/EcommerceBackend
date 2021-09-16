@@ -59,6 +59,10 @@ class Acceso
     //-----------------------------------------------------------
     //-------------------main page------------------------------
 
+    public static $crearCarrusel      =  'crear carrusel';
+    public static $listarCarrusel      =  'listar carrusel';
+    public static $actualizarCarrusel  =  'actualizar carrusel';
+    public static $eliminarCarrusel = 'eliminar carrusel';
 
     //getters
     //---------------------------usuario----------------------------
@@ -216,6 +220,22 @@ class Acceso
     public static  function getactualizarProductoAcordingCancelPedido ()
     {
         return (self::$actualizarProductoAcordingCancelPedido);
+    }
+    //---------------------------carrusel----------------------------
+    public static function getListarCarrusel(){
+        return (self::$listarCarrusel);
+    }
+    public static  function getCrearCarrusel()
+    {
+        return (self::$crearCarrusel);
+    }
+    public static  function getActualizarCarrusel()
+    {
+        return (self::$actualizarCarrusel);
+    }
+    public static  function getEliminarCarrusel()
+    {
+        return (self::$eliminarCarrusel);
     }
 
     public static  function hasPermission($permiso){
