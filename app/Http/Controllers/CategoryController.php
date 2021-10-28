@@ -102,8 +102,10 @@ class CategoryController extends Controller
     }
     //---------------para el main page-----------------------
     public function getRandomCategory(){
-        $categories=Category::where('parent_id',0)->get()->random(4);
-        return $categories;
+        $categoriaPredefinida = Category::whereIn('id', [1, 59,7,9])->get();
+        return $categoriaPredefinida;
+        // $categories=Category::where('parent_id',0)->get()->random(4);
+        // return $categories;
     }
     //-------------------------------------------------------------
 
